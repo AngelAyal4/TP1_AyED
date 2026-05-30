@@ -207,22 +207,6 @@ def juegoDados():
     #   vecesPerdidoDados: int
     # ─────────────────────────────────────
 
-    '''
-    ############################################################################################
-    NOTA PARA ANGEL (QUITAR LUEGO DE IMPLEMENTAR)
-    
-    # Agregar estas variables antes de esta función, son las globales que sirven para el reporte
-    
-    vecesJugadoDados = 0
-    vecesPerdidoDados = 0
-    vecesGanadoDados = 0
-
-    # Importar esta librería al principio del archivo principal
-
-    import random
-    ############################################################################################
-    '''
-
     global nombreJugadorDados
     global vecesJugadoDados
     global vecesGanadoDados
