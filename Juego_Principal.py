@@ -212,6 +212,12 @@ def juegoDados():
     global vecesGanadoDados
     global vecesPerdidoDados
     juegoActivo = True
+    tipoDeApuesta = ""
+    opcionUsuario = ""
+    dado1 = 0
+    dado2 = 0
+    sumaDados = 0
+    paridad = ""
 
     print("\n================================================\n")
     print ("  ♠ Juego: Dados ♠")
