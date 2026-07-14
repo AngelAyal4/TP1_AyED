@@ -4,27 +4,46 @@ import os
 
 
 """
-VARIABLES GLOBALES (para el reporte. Declarar en el archivo principal)
-    nombre:str (nombre del último jugador del juego B)
-    b_veces_jugado:int (cantidad total de partidas jugadas)
-    b_veces_ganado:int (cantidad de partidas ganadas)
-    b_veces_perdido:int (cantidad de partidas perdidas)
+Nombre de los integrantes del grupo:
+- Angel Jose Ayala
+- Gabriela Iglesias
+- Maximiliano Iván Campos
+- Santiago Nicolás Bolzan
+
+VARIABLES GLOBALES
+    a_nombre, b_nombre_jugador, d_nombre_jugador:str
+    a_racha, a_racha_max, a_veces_jugado, b_veces_jugado, b_veces_ganado, b_veces_perdido, d_veces_jugado, d_veces_ganado, d_veces_perdido :int
+
 """
+#INICIALIZO VARIABLES GLOBALES
+a_nombre = ''
+a_racha = 0
+a_racha_max = 0
+a_veces_jugado = 0
 
-nombre = ''
-racha = 0
-a = 0
-nreferencia = 0
-ncomparar = 0
-opcion = ''
 
-def juego_mayor_menor():
-    
-    global nombre, racha, a, nreferencia, ncomparar, opcion
-    
-    racha = 0
+b_nombre_jugador = ""
+b_veces_jugado = 0
+b_veces_ganado = 0
+b_veces_perdido = 0
+
+d_nombre_jugador = ""
+d_veces_jugado = 0
+d_veces_ganado = 0
+d_veces_perdido = 0
+
+
+def juego1():
+    """Variables Locales Juego A:
+        a, nreferencia, ncomparar:int
+        opcion:str
+
+    """
+    global a_nombre, a_racha, a_racha_max, a_veces_jugado
+    a_veces_jugado = a_veces_jugado + 1
+    a_racha = 0
     a = 0
-    nombre = input("Cual es tu nombre? ")
+    a_nombre = input("Cual es tu nombre? ")
     # Este sera nuestro numero de referencia
     nreferencia = random.randint(1, 1000)
     # Este while funcionara mientras no cometamos errores al adivinar mayor o menor
@@ -44,52 +63,30 @@ def juego_mayor_menor():
         # Analizamos si la opcion del usuario fue correcta o incorrecta. Sumamos al contador si este acerto, cerramos el while cambiando el valor de a si se equivocó.
         if opcion == "mayor":
             if nreferencia < ncomparar:
-                racha = racha + 1
+                a_racha = a_racha + 1
                 nreferencia = ncomparar
             else:
                 a = 1
         else:
             if nreferencia > ncomparar:
-                racha = racha + 1
+                a_racha = a_racha + 1
                 nreferencia = ncomparar
             else:
                 a = 1
-
-    print("Game Over", nombre)
-    print("Aciertos:", racha)
-
-"""
-VARIABLES GLOBALES (para el reporte. Declarar en el archivo principal)
-    b_nombre_jugador:str (nombre del último jugador del juego B)
-    b_veces_jugado:int (cantidad total de partidas jugadas)
-    b_veces_ganado:int (cantidad de partidas ganadas)
-    b_veces_perdido:int (cantidad de partidas perdidas)
-"""
-
-#INICIALIZO VARIABLES GLOBALES
-b_nombre_jugador = ""
-b_veces_jugado = 0
-b_veces_ganado = 0
-b_veces_perdido = 0
+    if a_racha_max < a_racha:
+        a_racha_max = a_racha
+    print(a_racha_max)    
+    print("Game Over", a_nombre)
+    print("Aciertos:", a_racha)
+    input("\nPresione la tecla 'Enter' para salir...")
 
 
-def juego_numero_secreto():
+def juego2():
     """
-    VARIABLES LOCALES 
-        MAX_INTENTOS:int (cantidad máxima de intentos permitidos)
-        RANGO_MIN:int (límite inferior del número secreto)
-        RANGO_MAX:int (límite superior del número secreto)
-        nombre_jugador:str (nombre ingresado por el jugador)
-        numero_secreto:int (número aleatorio generado por el programa)
-        intento_actual:int (número ingresado por el jugador en cada turno)
-        intentos_usados:int (contador de intentos realizados)
-        adivino:bool (True si el jugador acertó el número)
-        entrada_texto:str (entrada cruda del usuario antes de validar)
-        entrada_valida:bool (True cuando la entrada pasa todas las validaciones)
-        es_numero:bool (True si todos los caracteres del texto son dígitos)
-        indice:int (posición actual al recorrer la cadena de entrada)
-        caracter:str (carácter individual analizado en la validación)
-        intentos_restantes:int (intentos que le quedan al jugador en cada turno)
+    Variables locales juego B:
+        MAX_INTENTOS, RANGO_MIN, RANGO_MAX, numero_secreto, intento_actual, intentos_usados, indice, intentos_restantes:int
+        adivino, entrada_valida, es_numero:bool
+
     """
     global b_nombre_jugador, b_veces_jugado, b_veces_ganado, b_veces_perdido
 
@@ -178,40 +175,27 @@ def juego_numero_secreto():
     input("Presioná Enter para volver al menú")
 
 
-def juego_blackjack():
+def juego3():
         print("Juego en construcción...")
         input("\nPresione la tecla 'Enter' para continuar...")
         #os.system('cls' if os.name == 'nt' else 'clear')
     
 
-nombre_jugador_dados = ""
-veces_jugado_dados = 0
-veces_ganado_dados = 0
-veces_perdido_dados = 0
     
-def juego_dados():
+def juego4():
 
-# ─────────────────────────────────────
-# Nombre del módulo: Juego Dados
-# Variables:
-#   juego_activo : bool (booleano para el bucle principal)
-#   tipo_de_apuesta: str (elección del usuario si es par o impar)
-#   opcion_usuario : str (opción de seguir jugando o salir)
-#   dado1: int (número aleatorio del dado 1)
-#   dado2: int (número aleatorio del dado 1)
-#   suma_dados: int (suma de los dados)
-#   paridad: str (resultado de la suma de dados si es par o impar)
-#---Variables globales reporte---
-#   nombre_jugador_dados: str (nombre del jugador)
-#   veces_jugado_dados: int (cantidad de veces jugado, solo cuenta al iniciar)
-#   veces_ganado_dados: int (veces que el usuario acierta si es par o impar)
-#   veces_perdido_dados: int (veces que el usuario no acierta)
-# ─────────────────────────────────────
+    """
+    Variables locales juego D:
+        dado1, dado2, suma_dados:int
+        juego_activo:bool
+        tipo_de_apuesta, opcion_usuario, paridad:str
 
-    global nombre_jugador_dados
-    global veces_jugado_dados
-    global veces_ganado_dados
-    global veces_perdido_dados
+    """
+
+    global d_nombre_jugador
+    global d_veces_jugado
+    global d_veces_ganado
+    global d_veces_perdido
     juego_activo = True
     tipo_de_apuesta = ""
     opcion_usuario = ""
@@ -225,13 +209,13 @@ def juego_dados():
     print ("  Adiviná si la suma de los dados será par o impar\n")
     print("================================================\n")
     # Al iniciar suma a la variable glocal para el reporte
-    veces_jugado_dados = veces_jugado_dados + 1
+    d_veces_jugado = d_veces_jugado + 1
     # Pido y valido el nombre
-    nombre_jugador_dados = input("Escribe tu nombre: ")
-    while nombre_jugador_dados == "":
+    d_nombre_jugador = input("Escribe tu nombre: ")
+    while d_nombre_jugador == "":
         print("\n  ✗ Nombre vacío: Por favor escribe tu nombre\n")
-        nombre_jugador_dados = input("Escribe tu nombre: ")
-    print(f"\n| Bienvenido, {nombre_jugador_dados} ♠          |")
+        d_nombre_jugador = input("Escribe tu nombre: ")
+    print(f"\n| Bienvenido, {d_nombre_jugador} ♠          |")
     # Bucle principal
     while juego_activo:
         # Pido y valido el tipo de juego del usuario
@@ -262,15 +246,15 @@ def juego_dados():
         # Valido casos ganadores
         if (paridad == "Par" and tipo_de_apuesta == "1") or (paridad == "Impar" and tipo_de_apuesta == "2"):
             # Se suma a la variable global para el reporte
-            veces_ganado_dados = veces_ganado_dados + 1
+            d_veces_ganado = d_veces_ganado + 1
             print(f"Ganaste ✓\n")
         else:
             # Se suma a la variable global para el reporte
-            veces_perdido_dados = veces_perdido_dados + 1
+            d_veces_perdido = d_veces_perdido + 1
             print(f"\nPerdiste ✗\n")
         print("\n|----------------------------|+")
-        print(f"\n|      Ganados: {veces_ganado_dados}")
-        print(f"\n|      Perdidos: {veces_perdido_dados}")
+        print(f"\n|      Ganados: {d_veces_ganado}")
+        print(f"\n|      Perdidos: {d_veces_perdido}")
         print("\n|----------------------------+|")
         # Valido la opción del usuario para seguir jugando o salir
         opcion_usuario = (input("\nElige una opción: 1) Seguir jugando 2) Salir \n> "))
@@ -292,12 +276,12 @@ def juego_dados():
 
 def reporte():
     print('\n--- REPORTE DEL JUGADOR ---')
-    if nombre != '':
-        print('Mayor o Menor - Nombre:', nombre, '- Racha:', racha)
+    if a_nombre != '':
+        print('Mayor o Menor - Nombre:', a_nombre, 'Veces jugado: ', a_veces_jugado, '- Mayor racha alcanzada:', a_racha_max)
     if b_nombre_jugador != '':
         print('Número Secreto - Nombre:', b_nombre_jugador, '- Veces jugado:', b_veces_jugado, '- Ganadas:', b_veces_ganado, '- Perdidas:', b_veces_perdido)
-    if nombre_jugador_dados != '':
-        print('\nDados (Par o Impar) - Nombre:', nombre_jugador_dados, '- Veces jugadas:', veces_jugado_dados, '- Ganadas:', veces_ganado_dados, '- Perdidas:', veces_perdido_dados)
+    if d_nombre_jugador != '':
+        print('Dados (Par o Impar) - Nombre:', d_nombre_jugador, '- Veces jugadas:', d_veces_jugado, '- Ganadas:', d_veces_ganado, '- Perdidas:', d_veces_perdido)
     print('---------------------------')
 
 
@@ -311,38 +295,39 @@ def main():
         print("C - BlackJack Simple")
         print("D - Dados (Par o Impar)")
         print("E - Reporte")
-        print("S - Fin DEL PROGRAMA")
+        print("F - Fin DEL PROGRAMA")
         opcion = input("Ingrese su opcion: ").strip().upper()
-        while opcion == "" or (opcion != "A" and opcion != "B" and opcion != "C" and opcion != "D" and opcion != "E" and opcion != "S"):
+        while opcion == "" or (opcion != "A" and opcion != "B" and opcion != "C" and opcion != "D" and opcion != "E" and opcion != "F"):
             opcion = input("Ingreso invalido - reintente: ").strip().upper()
 
         match opcion:
             case "A":
                 os.system('cls' if os.name == 'nt' else 'clear')
-                juego_mayor_menor()
+                juego1()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 
             case "B":
                 os.system('cls' if os.name == 'nt' else 'clear')
-                juego_numero_secreto()
+                juego2()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 
             case "C":
                 os.system('cls' if os.name == 'nt' else 'clear')
-                juego_blackjack()
+                juego3()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 
             case "D":
                 os.system('cls' if os.name == 'nt' else 'clear')
-                juego_dados()
+                juego4()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 
             case "E":
                 os.system('cls' if os.name == 'nt' else 'clear')
                 reporte()
+                input("\nPresione la tecla 'Enter' para continuar...")
                 os.system('cls' if os.name == 'nt' else 'clear')
                 
-            case "S":
+            case "F":
                 os.system('cls' if os.name == 'nt' else 'clear')
                 print('\n\nGracias por jugar, no apueste y juega por diversión! Hasta la próxima!')
                 input("\nPresione la tecla 'Enter' para salir...")
