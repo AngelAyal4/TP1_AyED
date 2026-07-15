@@ -579,6 +579,7 @@ def reporte():
     if nombreJugadorDados != '':
         print('\nDados (Par o Impar) - Nombre:', nombreJugadorDados, '- Veces jugadas:', vecesJugadoDados, '- Ganadas:', vecesGanadoDados, '- Perdidas:', vecesPerdidoDados)
     print('---------------------------')
+    input("\nPresione la tecla 'Enter' para volver al menú...")
 
 
 def main():
