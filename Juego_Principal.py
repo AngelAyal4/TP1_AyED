@@ -4,6 +4,12 @@ import os
 
 
 """
+Nombre de los integrantes del grupo:
+- Angel Jose Ayala
+- Gabriela Iglesias
+- Maximiliano Iván Campos
+- Santiago Nicolás Bolzan
+
 VARIABLES GLOBALES (para el reporte. Declarar en el archivo principal)
     nombre:str (nombre del último jugador del juego Mayor o Menor)
     racha:int (cantidad de aciertos consecutivos del último jugador)
