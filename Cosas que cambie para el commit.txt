@@ -1,0 +1,9 @@
+Declarar variables en Mayor menor
+Cambiar la "S" por la "F" en el Menu
+Agregar la linea de presione Enter al reporte ya que sin esta desaparecia antes de verse.
+Corregir Reporte parte juego dados, espacio extra.
+Coloque variables globales de juego b en la parte superior
+Variables globales juego a corregidas
+Cambie nombre variables juego a y elimine algunas globales que no debian estar
+Corregir Reporte parte de mayor-menor
+Agregar nombres integrantes con comentario
