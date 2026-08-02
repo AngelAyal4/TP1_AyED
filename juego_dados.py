@@ -74,16 +74,35 @@ def juegoDados():
         else: 
             print(f"  Resultado: {sumaDados}  →  IMPAR ♠")
         print("  ─────────────────")
-        if (paridad == "Par" and tipoDeApuesta == "1") or (paridad == "Impar" and tipoDeApuesta == "2"):
-            vecesGanadoDados = vecesGanadoDados + 1
-            print(f"Ganaste ✓\n")
+        pi_jugadas[indice_jugador] = pi_jugadas[indice_jugador] + 1
+
+        if (
+            (paridad == "Par" and tipoDeApuesta == "1")
+            or
+            (paridad == "Impar" and tipoDeApuesta == "2")
+        ):
+            pi_ganadas[indice_jugador] = pi_ganadas[indice_jugador] + 1
+
+            pi_creditos[indice_jugador] = (
+                pi_creditos[indice_jugador] + apuesta
+            )
+
+            print(f"\nGanaste ${apuesta} ✓")
         else:
-            vecesPerdidoDados = vecesPerdidoDados + 1
-            print(f"\nPerdiste ✗\n")
-        print("\n|----------------------------|+")
-        print(f"\n|      Ganados: {vecesGanadoDados}")
-        print(f"\n|      Perdidos: {vecesPerdidoDados}")
-        print("\n|----------------------------+|")
+            pi_perdidas[indice_jugador] = pi_perdidas[indice_jugador] + 1
+
+            pi_creditos[indice_jugador] = (
+                pi_creditos[indice_jugador] - apuesta
+            )
+
+            print(f"\nPerdiste ${apuesta} ✗")
+        print("\n+--------------------------------+")
+        print(f"  Jugador: {pi_nombres[indice_jugador]}")
+        print(f"  Jugadas: {pi_jugadas[indice_jugador]}")
+        print(f"  Ganadas: {pi_ganadas[indice_jugador]}")
+        print(f"  Perdidas: {pi_perdidas[indice_jugador]}")
+        print(f"  Crédito: ${pi_creditos[indice_jugador]}")
+        print("+--------------------------------+")
         opcionUsuario = (input("\nElige una opción: 1) Seguir jugando 2) Salir \n> "))
         while opcionUsuario != "1" and opcionUsuario != "2":
             print("\n✗ Opción inválida. Presiona tecla 1 para jugar o tecla 2 para salir.\n")

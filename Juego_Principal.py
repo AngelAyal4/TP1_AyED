@@ -10,7 +10,7 @@ Nombre de los integrantes del grupo:
 - Maximiliano Iván Campos
 - Santiago Nicolás Bolzan
 
-VARIABLES GLOBALES (para el reporte. Declarar en el archivo principal)
+VARIABLES GLOBALES
     nombre:str (nombre del último jugador del juego Mayor o Menor)
     racha:int (cantidad de aciertos consecutivos del último jugador)
 """
@@ -21,6 +21,21 @@ a = 0
 nreferencia = 0
 ncomparar = 0
 opcion = ''
+mm_nombres = ["", "", "", "", "", "", "", "", "", ""]
+mm_rachas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+mm_cantidad_jugadores = 0
+MAX_JUGADORES = 10
+
+def buscar_jugador(nombres, cantidad_jugadores, nombre_buscado):
+    indice = 0
+
+    while indice < cantidad_jugadores:
+        if nombres[indice].lower() == nombre_buscado.lower():
+            return indice
+
+        indice = indice + 1
+
+    return -1
 
 def juego_mayor_menor():
     """
@@ -33,6 +48,8 @@ def juego_mayor_menor():
         racha:int (cantidad de aciertos consecutivos)
     """
     global nombre, racha, a, nreferencia, ncomparar, opcion
+    global mm_nombres, mm_rachas, mm_cantidad_jugadores
+    
 
     print("\n================================================\n")
     print("       ♠  MAYOR O MENOR  ♠")
@@ -44,6 +61,28 @@ def juego_mayor_menor():
         if nombre_jugador != "":
             break
         print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
+        indice_jugador = buscar_jugador(
+            mm_nombres,
+            mm_cantidad_jugadores,
+            nombre_jugador
+        )
+
+        if indice_jugador == -1:
+            if mm_cantidad_jugadores == MAX_JUGADORES:
+                print("\n  ✗ No hay cupos para nuevos jugadores.")
+                print("  Se alcanzó el límite de 10 jugadores.")
+                input("\nPresione la tecla 'Enter' para continuar...")
+                return
+
+            mm_nombres[mm_cantidad_jugadores] = nombre_jugador
+            mm_rachas[mm_cantidad_jugadores] = 0
+
+            indice_jugador = mm_cantidad_jugadores
+            mm_cantidad_jugadores = mm_cantidad_jugadores + 1
+
+            print(f"\n  ✓ Nuevo jugador registrado: {nombre_jugador}")
+        else:
+            print(f"\n  ✓ Bienvenido nuevamente, {mm_nombres[indice_jugador]}")
     nombre = nombre_jugador
     print(f"\n| Bienvenido, {nombre_jugador} ♠          |")
 
@@ -79,7 +118,7 @@ def juego_mayor_menor():
             else:
                 print("\n  ✗ Incorrecto. El número era mayor.")
                 a = 1
-
+    mm_rachas[indice_jugador] = racha
     print("\n================================================")
     print(f"|                                      |")
     print(f"|     ♠  G A M E  O V E R  ♠           |")
@@ -102,6 +141,12 @@ b_nombre_jugador = ""
 b_veces_jugado = 0
 b_veces_ganado = 0
 b_veces_perdido = 0
+ns_nombres = ["", "", "", "", "", "", "", "", "", ""]
+ns_jugadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ns_ganadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ns_perdidas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+ns_cantidad_jugadores = 0
 
 
 def juego_numero_secreto():
@@ -122,7 +167,9 @@ def juego_numero_secreto():
         caracter:str (carácter individual analizado en la validación)
         intentos_restantes:int (intentos que le quedan al jugador en cada turno)
     """
-    global b_nombre_jugador, b_veces_jugado, b_veces_ganado, b_veces_perdido
+    global b_nombre_jugador
+    global ns_nombres, ns_jugadas, ns_ganadas, ns_perdidas
+    global ns_cantidad_jugadores
 
     print("\n================================================\n")
     print("     ♠  NÚMERO SECRETO  ♠")
@@ -134,6 +181,30 @@ def juego_numero_secreto():
         if nombre_jugador != "":
             break
         print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
+        indice_jugador = buscar_jugador(
+            ns_nombres,
+            ns_cantidad_jugadores,
+            nombre_jugador
+        )
+
+        if indice_jugador == -1:
+            if ns_cantidad_jugadores == MAX_JUGADORES:
+                print("\n  ✗ No hay cupos para nuevos jugadores.")
+                print("  Se alcanzó el límite de 10 jugadores.")
+                input("\nPresione la tecla 'Enter' para continuar...")
+                return
+
+            ns_nombres[ns_cantidad_jugadores] = nombre_jugador
+            ns_jugadas[ns_cantidad_jugadores] = 0
+            ns_ganadas[ns_cantidad_jugadores] = 0
+            ns_perdidas[ns_cantidad_jugadores] = 0
+
+            indice_jugador = ns_cantidad_jugadores
+            ns_cantidad_jugadores = ns_cantidad_jugadores + 1
+
+            print(f"\n  ✓ Nuevo jugador registrado: {nombre_jugador}")
+        else:
+            print(f"\n  ✓ Bienvenido nuevamente, {ns_nombres[indice_jugador]}")
     print(f"\n| Bienvenido, {nombre_jugador} ♠          |")
 
     MAX_INTENTOS = 6
@@ -191,12 +262,14 @@ def juego_numero_secreto():
     print(f"|                                      |")
     print("================================================")
 
+    ns_jugadas[indice_jugador] = ns_jugadas[indice_jugador] + 1
+
     if adivino:
-        b_veces_ganado = b_veces_ganado + 1
+        ns_ganadas[indice_jugador] = ns_ganadas[indice_jugador] + 1
     else:
-        b_veces_perdido = b_veces_perdido + 1
+        ns_perdidas[indice_jugador] = ns_perdidas[indice_jugador] + 1
+
     b_nombre_jugador = nombre_jugador
-    b_veces_jugado = b_veces_jugado + 1
     input("\nPresione la tecla 'Enter' para continuar...")
 
 """
@@ -211,11 +284,14 @@ VARIABLES GLOBALES (para el reporte. Declarar en el archivo principal)
 
 #INICIALIZO VARIABLES GLOBALES DE BLACKJACK
 bj_nombre_jugador = ""
-bj_veces_jugado = 0
-bj_veces_ganado = 0
-bj_veces_perdido = 0
-bj_veces_empatado = 0
-bj_jugadores = []
+
+bj_jugadores = ["", "", "", "", "", "", "", "", "", ""]
+bj_jugadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+bj_ganadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+bj_perdidas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+bj_empatadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+bj_cantidad_jugadores = 0
 
 
 def juego_blackjack():
@@ -236,9 +312,10 @@ def juego_blackjack():
         banca_blackjack:bool (True si la banca tiene blackjack natural)
         jugador_blackjack:bool (True si el jugador tiene blackjack natural)
     """
-    global bj_nombre_jugador, bj_veces_jugado, bj_veces_ganado
-    global bj_veces_perdido, bj_veces_empatado, bj_jugadores
-
+    global bj_nombre_jugador
+    global bj_jugadores, bj_jugadas, bj_ganadas
+    global bj_perdidas, bj_empatadas
+    global bj_cantidad_jugadores
     PALOS = ["♠", "♥", "♦", "♣"]
     RANGOS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
 
@@ -253,38 +330,77 @@ def juego_blackjack():
             break
         print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
 
-    nombre_existe = False
-    for nombre_registrado in bj_jugadores:
-        if nombre_registrado.lower() == nombre_jugador.lower():
-            nombre_existe = True
-            break
+    indice_jugador = buscar_jugador(
+        bj_jugadores,
+        bj_cantidad_jugadores,
+        nombre_jugador
+    )
 
-    if not nombre_existe:
-        if len(bj_jugadores) >= 10:
-            print("\n  ✗ No hay cupos para un nuevo jugador. Límite de 10 alcanzado.")
-            print("  Volvé al menú principal.")
+    if indice_jugador == -1:
+        if bj_cantidad_jugadores == MAX_JUGADORES:
+            print("\n  ✗ No hay cupos para nuevos jugadores.")
+            print("  Se alcanzó el límite de 10 jugadores.")
             input("\nPresione la tecla 'Enter' para continuar...")
             return
-        else:
-            bj_jugadores.append(nombre_jugador)
-            print(f"\n  ✓ Nuevo jugador registrado: {nombre_jugador}")
+
+        bj_jugadores[bj_cantidad_jugadores] = nombre_jugador
+        bj_jugadas[bj_cantidad_jugadores] = 0
+        bj_ganadas[bj_cantidad_jugadores] = 0
+        bj_perdidas[bj_cantidad_jugadores] = 0
+        bj_empatadas[bj_cantidad_jugadores] = 0
+
+        indice_jugador = bj_cantidad_jugadores
+        bj_cantidad_jugadores = bj_cantidad_jugadores + 1
+
+        print(f"\n  ✓ Nuevo jugador registrado: {nombre_jugador}")
     else:
-        print(f"\n  ✓ Bienvenido de nuevo, {nombre_jugador}")
+        print(f"\n  ✓ Bienvenido nuevamente, {bj_jugadores[indice_jugador]}")
 
     print(f"\n| Bienvenido, {nombre_jugador} ♠          |")
     bj_nombre_jugador = nombre_jugador
 
     jugar_otra = "S"
     while jugar_otra == "S":
-        mazo = []
-        for palo in PALOS:
-            for rango in RANGOS:
-                mazo.append((rango, palo))
+        mazo = [
+            None, None, None, None, None, None, None, None, None, None,
+            None, None, None, None, None, None, None, None, None, None,
+            None, None, None, None, None, None, None, None, None, None,
+            None, None, None, None, None, None, None, None, None, None,
+            None, None, None, None, None, None, None, None, None, None,
+            None, None
+        ]
+
+        indice_mazo = 0
+        indice_palo = 0
+
+        while indice_palo < 4:
+            indice_rango = 0
+
+            while indice_rango < 13:
+                mazo[indice_mazo] = (
+                    RANGOS[indice_rango],
+                    PALOS[indice_palo]
+                )
+
+                indice_mazo = indice_mazo + 1
+                indice_rango = indice_rango + 1
+
+            indice_palo = indice_palo + 1
         random.shuffle(mazo)
         indice_carta = 0
 
-        cartas_jugador = []
-        cartas_banca = []
+        cartas_jugador = [
+            None, None, None, None, None,
+            None, None, None, None, None, None
+        ]
+
+        cartas_banca = [
+            None, None, None, None, None,
+            None, None, None, None, None, None
+        ]
+
+        cantidad_cartas_jugador = 0
+        cantidad_cartas_banca = 0
         puntos_jugador = 0
         puntos_banca = 0
 
@@ -292,37 +408,51 @@ def juego_blackjack():
         print("          NUEVA PARTIDA")
         print("================================================\n")
 
-        cartas_jugador.append(mazo[indice_carta])
+        cartas_jugador[cantidad_cartas_jugador] = mazo[indice_carta]
+        cantidad_cartas_jugador = cantidad_cartas_jugador + 1
         indice_carta = indice_carta + 1
-        cartas_banca.append(mazo[indice_carta])
+
+        cartas_banca[cantidad_cartas_banca] = mazo[indice_carta]
+        cantidad_cartas_banca = cantidad_cartas_banca + 1
         indice_carta = indice_carta + 1
-        cartas_jugador.append(mazo[indice_carta])
+
+        cartas_jugador[cantidad_cartas_jugador] = mazo[indice_carta]
+        cantidad_cartas_jugador = cantidad_cartas_jugador + 1
         indice_carta = indice_carta + 1
-        cartas_banca.append(mazo[indice_carta])
+
+        cartas_banca[cantidad_cartas_banca] = mazo[indice_carta]
+        cantidad_cartas_banca = cantidad_cartas_banca + 1
         indice_carta = indice_carta + 1
 
         print("  Cartas de la Banca:")
-        for carta in cartas_banca:
+        indice = 0
+
+        while indice < cantidad_cartas_banca:
+            carta = cartas_banca[indice]
             print(f"    [{carta[0]}{carta[1]}]")
+            indice = indice + 1
 
         print("\n  Cartas de", nombre_jugador + ":")
-        for carta in cartas_jugador:
-            print(f"    [{carta[0]}{carta[1]}]")
+        indice = 0
 
-        puntos_jugador = _calcular_puntos(cartas_jugador)
+        while indice < cantidad_cartas_jugador:
+            carta = cartas_jugador[indice]
+            print(f"    [{carta[0]}{carta[1]}]")
+            indice = indice + 1
+        puntos_jugador = _calcular_puntos(cartas_jugador, cantidad_cartas_jugador)
         print(f"\n  Tu puntuación: {puntos_jugador}")
 
         if puntos_jugador == 21:
             print("  ♠ ¡BLACKJACK! Sumaste 21 con las dos cartas.")
-            puntos_banca = _calcular_puntos(cartas_banca)
+            puntos_banca = _calcular_puntos(cartas_banca, cantidad_cartas_banca)
             print(f"\n  Puntuación Banca: {puntos_banca}")
             if puntos_banca != 21:
                 print("\n  >>> ¡GANASTE! <<<")
-                bj_veces_ganado = bj_veces_ganado + 1
+                bj_ganadas[indice_jugador] = bj_ganadas[indice_jugador] + 1
             else:
                 print("\n  >>> EMPATE (ambos con Blackjack) <<<")
-                bj_veces_empatado = bj_veces_empatado + 1
-            bj_veces_jugado = bj_veces_jugado + 1
+                bj_empatadas[indice_jugador] = bj_empatadas[indice_jugador] + 1
+            bj_jugadas[indice_jugador] = bj_jugadas[indice_jugador] + 1
             print("\n----------------------------------------")
             print("  ESTADÍSTICAS DE BLACKJACK:")
             print(f"    Partidas jugadas: {bj_veces_jugado}")
@@ -350,13 +480,22 @@ def juego_blackjack():
                     print('  ✗ Opción inválida. Escribí "Pedir" o "Plantarse".')
 
             if opcion == "PEDIR":
-                cartas_jugador.append(mazo[indice_carta])
+                cartas_jugador[cantidad_cartas_jugador] = mazo[indice_carta]
+
+                carta_nueva = cartas_jugador[cantidad_cartas_jugador]
+
+                cantidad_cartas_jugador = cantidad_cartas_jugador + 1
                 indice_carta = indice_carta + 1
-                print(f"\n  Sacaste: [{cartas_jugador[-1][0]}{cartas_jugador[-1][1]}]")
+
+                print(f"\n  Sacaste: [{carta_nueva[0]}{carta_nueva[1]}]")
                 print("  Tu mano:")
-                for carta in cartas_jugador:
+                indice = 0
+
+                while indice < cantidad_cartas_jugador:
+                    carta = cartas_jugador[indice]
                     print(f"    [{carta[0]}{carta[1]}]")
-                puntos_jugador = _calcular_puntos(cartas_jugador)
+                    indice = indice + 1
+                puntos_jugador = _calcular_puntos(cartas_jugador, cantidad_cartas_jugador)
                 print(f"\n  Tu puntuación: {puntos_jugador}")
 
                 if puntos_jugador > 21:
@@ -375,48 +514,61 @@ def juego_blackjack():
             print("  Cartas de la Banca:")
             for carta in cartas_banca:
                 print(f"    [{carta[0]}{carta[1]}]")
-            puntos_banca = _calcular_puntos(cartas_banca)
+            puntos_banca = _calcular_puntos(cartas_banca, cantidad_cartas_banca)
             print(f"  Puntuación Banca: {puntos_banca}")
 
             while puntos_banca <= 16:
-                cartas_banca.append(mazo[indice_carta])
+                cartas_banca[cantidad_cartas_banca] = mazo[indice_carta]
+
+                carta_nueva = cartas_banca[cantidad_cartas_banca]
+
+                cantidad_cartas_banca = cantidad_cartas_banca + 1
                 indice_carta = indice_carta + 1
-                print(f"\n  La banca pide carta: [{cartas_banca[-1][0]}{cartas_banca[-1][1]}]")
-                puntos_banca = _calcular_puntos(cartas_banca)
+
+                print(f"\n  La banca pide carta: [{carta_nueva[0]}{carta_nueva[1]}]")
+                puntos_banca = _calcular_puntos(cartas_banca, cantidad_cartas_banca)
                 print(f"  Puntuación Banca: {puntos_banca}")
 
             print("\n----------------------------------------")
             if puntos_banca > 21:
                 print("\n  >>> ¡GANASTE! La banca se pasó de 21. <<<")
-                bj_veces_ganado = bj_veces_ganado + 1
+                bj_ganadas[indice_jugador] = bj_ganadas[indice_jugador] + 1
             elif puntos_jugador > puntos_banca:
                 print(f"\n  >>> ¡GANASTE! Vos: {puntos_jugador} | Banca: {puntos_banca} <<<")
-                bj_veces_ganado = bj_veces_ganado + 1
+                bj_ganadas[indice_jugador] = bj_ganadas[indice_jugador] + 1
             elif puntos_jugador < puntos_banca:
                 print(f"\n  >>> PERDISTE. Vos: {puntos_jugador} | Banca: {puntos_banca} <<<")
-                bj_veces_perdido = bj_veces_perdido + 1
+                bj_perdidas[indice_jugador] = bj_perdidas[indice_jugador] + 1
             else:
                 #Empate a 21: si la banca tiene blackjack natural (2 cartas) y el jugador no, gana la banca
-                banca_blackjack = (len(cartas_banca) == 2 and puntos_banca == 21)
-                jugador_blackjack = (len(cartas_jugador) == 2 and puntos_jugador == 21)
+                banca_blackjack = (
+                    cantidad_cartas_banca == 2
+                    and puntos_banca == 21
+                )
+
+                jugador_blackjack = (
+                    cantidad_cartas_jugador == 2
+                    and puntos_jugador == 21
+                )
                 if banca_blackjack and not jugador_blackjack:
                     print("\n  >>> PERDISTE. La banca tiene Blackjack natural. <<<")
-                    bj_veces_perdido = bj_veces_perdido + 1
+                    bj_perdidas[indice_jugador] = bj_perdidas[indice_jugador] + 1
                 else:
                     print(f"\n  >>> EMPATE. Ambos con {puntos_jugador} puntos <<<")
-                    bj_veces_empatado = bj_veces_empatado + 1
+                    bj_empatadas[indice_jugador] = bj_empatadas[indice_jugador] + 1
         else:
-            bj_veces_perdido = bj_veces_perdido + 1
-            puntos_banca = _calcular_puntos(cartas_banca)
+            bj_perdidas[indice_jugador] = bj_perdidas[indice_jugador] + 1
+            puntos_banca = _calcular_puntos(cartas_banca, cantidad_cartas_banca)
             print(f"\n  Puntuación Banca (no necesitó jugar): {puntos_banca}")
 
-        bj_veces_jugado = bj_veces_jugado + 1
+        bj_jugadas[indice_jugador] = bj_jugadas[indice_jugador] + 1
         print("\n----------------------------------------")
         print("  ESTADÍSTICAS DE BLACKJACK:")
-        print(f"    Partidas jugadas: {bj_veces_jugado}")
-        print(f"    Ganadas: {bj_veces_ganado}")
-        print(f"    Perdidas: {bj_veces_perdido}")
-        print(f"    Empatadas: {bj_veces_empatado}")
+        print(f"    Jugador: {bj_jugadores[indice_jugador]}")
+        print(f"    Partidas jugadas: {bj_jugadas[indice_jugador]}")
+        print(f"    Ganadas: {bj_ganadas[indice_jugador]}")
+        print(f"    Perdidas: {bj_perdidas[indice_jugador]}")
+        print(f"    Empatadas: {bj_empatadas[indice_jugador]}")
         print("----------------------------------------")
 
         jugar_otra = ""
@@ -439,39 +591,50 @@ def juego_blackjack():
     input("\nPresione la tecla 'Enter' para continuar...")
 
 
-def _calcular_puntos(cartas):
+
+def _calcular_puntos(cartas, cantidad_cartas):
     """
-    Calcula la puntuación de una mano de Blackjack.
-    CARTAS NUMÉRICAS (2-10): valen su número.
-    FIGURAS (J, Q, K): valen 10.
-    AS (A): vale 11, pero si al sumarlo se supera 21, pasa a valer 1.
-    """
+        Calcula la puntuación de una mano de Blackjack.
+        CARTAS NUMÉRICAS (2-10): valen su número.
+        FIGURAS (J, Q, K): valen 10.
+        AS (A): vale 11, pero si al sumarlo se supera 21, pasa a valer 1.
+        """
     total = 0
     cantidad_ases = 0
+    indice = 0
 
-    for carta in cartas:
-        rango = carta[0]
+    while indice < cantidad_cartas:
+        rango = cartas[indice][0]
+
         if rango == "A":
             total = total + 11
             cantidad_ases = cantidad_ases + 1
         elif rango == "J" or rango == "Q" or rango == "K":
             total = total + 10
         else:
-            #Cartas numéricas (2 al 10)
             total = total + int(rango)
 
-    #Si nos pasamos de 21 y tenemos Ases, los convertimos de 11 a 1
+        indice = indice + 1
+
     while total > 21 and cantidad_ases > 0:
         total = total - 10
         cantidad_ases = cantidad_ases - 1
 
     return total
+
     
 
 nombreJugadorDados = ''
 vecesJugadoDados = 0
 vecesGanadoDados = 0
 vecesPerdidoDados = 0
+pi_nombres = ["", "", "", "", "", "", "", "", "", ""]
+pi_jugadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+pi_ganadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+pi_perdidas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+pi_creditos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+pi_cantidad_jugadores = 0
     
 def juegoDados():
     # ─────────────────────────────────────
@@ -495,6 +658,9 @@ def juegoDados():
     global vecesJugadoDados
     global vecesGanadoDados
     global vecesPerdidoDados
+    global pi_nombres, pi_jugadas, pi_ganadas
+    global pi_perdidas, pi_creditos
+    global pi_cantidad_jugadores
     juegoActivo = True
 
     print("\n================================================\n")
@@ -505,9 +671,56 @@ def juegoDados():
     while nombreJugadorDados == "":
         print("\n  ✗ Nombre vacío: Por favor escribe tu nombre\n")
         nombreJugadorDados = input("Escribe tu nombre: ").strip()
+        indice_jugador = buscar_jugador(
+            pi_nombres,
+            pi_cantidad_jugadores,
+            nombreJugadorDados
+        )
+
+        if indice_jugador == -1:
+            if pi_cantidad_jugadores == MAX_JUGADORES:
+                print("\n  ✗ No hay cupos para nuevos jugadores.")
+                print("  Se alcanzó el límite de 10 jugadores.")
+                input("\nPresione la tecla 'Enter' para continuar...")
+                return
+
+            pi_nombres[pi_cantidad_jugadores] = nombreJugadorDados
+            pi_jugadas[pi_cantidad_jugadores] = 0
+            pi_ganadas[pi_cantidad_jugadores] = 0
+            pi_perdidas[pi_cantidad_jugadores] = 0
+            pi_creditos[pi_cantidad_jugadores] = 1000
+
+            indice_jugador = pi_cantidad_jugadores
+            pi_cantidad_jugadores = pi_cantidad_jugadores + 1
+
+            print(f"\n  ✓ Nuevo jugador registrado: {nombreJugadorDados}")
+        else:
+            print(f"\n  ✓ Bienvenido nuevamente, {pi_nombres[indice_jugador]}")
     print(f"\n| Bienvenido, {nombreJugadorDados} ♠          |")
     while juegoActivo:
-        vecesJugadoDados = vecesJugadoDados + 1
+        if pi_creditos[indice_jugador] == 0:
+            print("\n  ✗ Te quedaste sin crédito.")
+            print("  No podés continuar jugando.")
+            juegoActivo = False
+            continue
+        print(f"\nCrédito disponible: ${pi_creditos[indice_jugador]}")
+
+        apuesta_valida = False
+
+        while apuesta_valida == False:
+            entrada_apuesta = input("Ingresá el monto de la apuesta: $").strip()
+
+            if entrada_apuesta.isdigit() == False:
+                print("  ✗ La apuesta debe ser un número entero.")
+            else:
+                apuesta = int(entrada_apuesta)
+
+                if apuesta <= 0:
+                    print("  ✗ La apuesta debe ser mayor que cero.")
+                elif apuesta > pi_creditos[indice_jugador]:
+                    print("  ✗ No podés apostar más de tu crédito.")
+                else:
+                    apuesta_valida = True
         tipoDeApuesta = input("\nApuestas por: 1) Par | 2) Impar\n> ")
         while tipoDeApuesta != "1" and tipoDeApuesta != "2":
             print("\n  ✗ Opción inválida. Ingresá 1 para Par o 2 para Impar.\n")
@@ -530,16 +743,35 @@ def juegoDados():
         else: 
             print(f"  Resultado: {sumaDados}  →  IMPAR ♠")
         print("  ─────────────────")
-        if (paridad == "Par" and tipoDeApuesta == "1") or (paridad == "Impar" and tipoDeApuesta == "2"):
-            vecesGanadoDados = vecesGanadoDados + 1
-            print(f"Ganaste ✓\n")
+        pi_jugadas[indice_jugador] = pi_jugadas[indice_jugador] + 1
+
+        if (
+            (paridad == "Par" and tipoDeApuesta == "1")
+            or
+            (paridad == "Impar" and tipoDeApuesta == "2")
+        ):
+            pi_ganadas[indice_jugador] = pi_ganadas[indice_jugador] + 1
+
+            pi_creditos[indice_jugador] = (
+                pi_creditos[indice_jugador] + apuesta
+            )
+
+            print(f"\nGanaste ${apuesta} ✓")
         else:
-            vecesPerdidoDados = vecesPerdidoDados + 1
-            print(f"\nPerdiste ✗\n")
-        print("\n|----------------------------|+")
-        print(f"\n|      Ganados: {vecesGanadoDados}")
-        print(f"\n|      Perdidos: {vecesPerdidoDados}")
-        print("\n|----------------------------+|")
+            pi_perdidas[indice_jugador] = pi_perdidas[indice_jugador] + 1
+
+            pi_creditos[indice_jugador] = (
+                pi_creditos[indice_jugador] - apuesta
+            )
+
+            print(f"\nPerdiste ${apuesta} ✗")
+        print("\n+--------------------------------+")
+        print(f"  Jugador: {pi_nombres[indice_jugador]}")
+        print(f"  Jugadas: {pi_jugadas[indice_jugador]}")
+        print(f"  Ganadas: {pi_ganadas[indice_jugador]}")
+        print(f"  Perdidas: {pi_perdidas[indice_jugador]}")
+        print(f"  Crédito: ${pi_creditos[indice_jugador]}")
+        print("+--------------------------------+")
         opcionUsuario = (input("\nElige una opción: 1) Seguir jugando 2) Salir \n> "))
         while opcionUsuario != "1" and opcionUsuario != "2":
             print("\n✗ Opción inválida. Presiona tecla 1 para jugar o tecla 2 para salir.\n")
