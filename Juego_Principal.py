@@ -58,7 +58,7 @@ ns_perdidas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ns_cantidad_jugadores = 0
 
 bj_nombre_ultimo_jugador = ""
-bj_jugadores = ["", "", "", "", "", "", "", "", "", "", ""]
+bj_jugadores = ["", "", "", "", "", "", "", "", "", ""]
 bj_jugadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 bj_ganadas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 bj_perdidas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -73,23 +73,72 @@ pi_perdidas = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 pi_creditos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 pi_cantidad_jugadores = 0
 
+def convertir_digitos_a_entero(texto):
+    """
+    ALGORITMO: Convierte un string de digitos a entero sin usar int().
+    Usa slicing para recorrer el string caracter por caracter,
+    compara cada caracter contra '0'..'9' para obtener su valor numerico,
+    y construye el numero con aritmetica basica (multiplicacion por 10
+    y suma). No usa len(), for(), ord(), ni ninguna funcion prohibida.
+    """
+    resultado = 0
+    indice = 0
+    while texto[indice:indice+1] != '':
+        caracter = texto[indice:indice+1]
+        if caracter == '0':
+            valor = 0
+        elif caracter == '1':
+            valor = 1
+        elif caracter == '2':
+            valor = 2
+        elif caracter == '3':
+            valor = 3
+        elif caracter == '4':
+            valor = 4
+        elif caracter == '5':
+            valor = 5
+        elif caracter == '6':
+            valor = 6
+        elif caracter == '7':
+            valor = 7
+        elif caracter == '8':
+            valor = 8
+        elif caracter == '9':
+            valor = 9
+        else:
+            valor = 0
+        resultado = resultado * 10 + valor
+        indice = indice + 1
+    return resultado
+
+ns_convertir_a_entero = convertir_digitos_a_entero
+pi_convertir_a_entero = convertir_digitos_a_entero
+
 def buscar_jugador(nombres, cantidad_jugadores, nombre_buscado):
     """
+    ALGORITMO: Busqueda secuencial.
+    Recorre el arreglo posicion por posicion desde el inicio.
+    En cada paso compara el nombre buscado con el nombre en la posicion actual.
+    Si coinciden, guarda la posicion y detiene la busqueda.
+    Si llega al final sin encontrar, devuelve -1.
+
     VARIABLES LOCALES
         nombres:list (arreglo de nombres de jugadores en el que se realiza la búsqueda)
         cantidad_jugadores:int (cantidad de posiciones ocupadas en el arreglo de nombres)
         nombre_buscado:str (nombre que se desea localizar dentro del arreglo)
         indice:int (posición utilizada para recorrer secuencialmente el arreglo)
+        posicion:int (indica la posicion encontrada, -1 si no se encontro)
     """
     indice = 0
+    posicion = -1
 
-    while indice < cantidad_jugadores:
+    while indice < cantidad_jugadores and posicion == -1:
         if nombres[indice].lower() == nombre_buscado.lower():
-            return indice
+            posicion = indice
+        else:
+            indice = indice + 1
 
-        indice = indice + 1
-
-    return -1
+    return posicion
 
 def juego_mayor_menor():
     """
@@ -101,6 +150,8 @@ def juego_mayor_menor():
         mm_numero_referencia:int (número mostrado como referencia para la comparación)
         mm_numero_comparar:int (nuevo número aleatorio comparado con el de referencia)
         mm_opcion:str (elección ingresada por el jugador: mayor o menor)
+        mm_nombre_valido:int (indica si el nombre ingresado no esta vacio)
+        mm_salir:int (indica si se debe salir de la funcion sin jugar)
     """
     global mm_nombre_ultimo_jugador, mm_cantidad_jugadores
     
@@ -110,11 +161,14 @@ def juego_mayor_menor():
     print("  Adiviná si el siguiente número es mayor o menor\n")
     print("================================================\n")
 
-    while True:
+    # Validacion de nombre sin break: se repite mientras el nombre sea vacio
+    mm_nombre_valido = 0
+    while mm_nombre_valido == 0:
         mm_nombre_jugador = input("Escribí tu nombre: ").strip()
         if mm_nombre_jugador != "":
-            break
-        print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
+            mm_nombre_valido = 1
+        else:
+            print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
 
     mm_indice_jugador = buscar_jugador(
         mm_nombres,
@@ -122,68 +176,73 @@ def juego_mayor_menor():
         mm_nombre_jugador
     )
 
+    mm_salir = 0
+
     if mm_indice_jugador == -1:
         if mm_cantidad_jugadores == MAX_JUGADORES:
             print("\n  ✗ No hay cupos para nuevos jugadores.")
             print("  Se alcanzó el límite de 10 jugadores.")
             input("\nPresione la tecla 'Enter' para continuar...")
-            return
+            mm_salir = 1
 
-        mm_nombres[mm_cantidad_jugadores] = mm_nombre_jugador
-        mm_rachas[mm_cantidad_jugadores] = 0
+        if mm_salir == 0:
+            mm_nombres[mm_cantidad_jugadores] = mm_nombre_jugador
+            mm_rachas[mm_cantidad_jugadores] = 0
 
-        mm_indice_jugador = mm_cantidad_jugadores
-        mm_cantidad_jugadores = mm_cantidad_jugadores + 1
+            mm_indice_jugador = mm_cantidad_jugadores
+            mm_cantidad_jugadores = mm_cantidad_jugadores + 1
 
-        print(f"\n  ✓ Nuevo jugador registrado: {mm_nombre_jugador}")
+            print(f"\n  ✓ Nuevo jugador registrado: {mm_nombre_jugador}")
     else:
         print(f"\n  ✓ Bienvenido nuevamente, {mm_nombres[mm_indice_jugador]}")
-    mm_nombre_ultimo_jugador = mm_nombre_jugador
-    print(f"\n| Bienvenido, {mm_nombre_jugador} ♠          |")
 
-    mm_racha = 0
-    mm_juego_finalizado = 0
-    mm_numero_referencia = random.randint(1, 1000)
+    if mm_salir == 0:
+        mm_nombre_ultimo_jugador = mm_nombre_jugador
+        print(f"\n| Bienvenido, {mm_nombre_jugador} ♠          |")
 
-    while mm_juego_finalizado == 0:
-        print("\n----------------------------------------")
-        print(f"  Número de referencia: {mm_numero_referencia}")
-        print("----------------------------------------")
-        mm_opcion = input('\n  Escribí "mayor" o "menor": ').strip().lower()
-        while mm_opcion != "mayor" and mm_opcion != "menor":
-            mm_opcion = input('  ✗ Incorrecto. Escribí "mayor" o "menor": ').strip().lower()
+        mm_racha = 0
+        mm_juego_finalizado = 0
+        mm_numero_referencia = random.randint(1, 1000)
 
-        mm_numero_comparar = random.randint(1, 1000)
+        while mm_juego_finalizado == 0:
+            print("\n----------------------------------------")
+            print(f"  Número de referencia: {mm_numero_referencia}")
+            print("----------------------------------------")
+            mm_opcion = input('\n  Escribí "mayor" o "menor": ').strip().lower()
+            while mm_opcion != "mayor" and mm_opcion != "menor":
+                mm_opcion = input('  ✗ Incorrecto. Escribí "mayor" o "menor": ').strip().lower()
 
-        if mm_numero_comparar == mm_numero_referencia:
-            print(f"\n  Salió nuevamente el número {mm_numero_comparar}.")
-            print("  El juego continúa y la racha no cambia.")
-        else:
-            if mm_opcion == "mayor":
-                if mm_numero_referencia < mm_numero_comparar:
-                    mm_racha = mm_racha + 1
-                    print("\n  ✓ ¡Acertaste!")
-                    mm_numero_referencia = mm_numero_comparar
-                else:
-                    print("\n  ✗ Incorrecto. El número era menor.")
-                    mm_juego_finalizado = 1
+            mm_numero_comparar = random.randint(1, 1000)
+
+            if mm_numero_comparar == mm_numero_referencia:
+                print(f"\n  Salió nuevamente el número {mm_numero_comparar}.")
+                print("  El juego continúa y la racha no cambia.")
             else:
-                if mm_numero_referencia > mm_numero_comparar:
-                    mm_racha = mm_racha + 1
-                    print("\n  ✓ ¡Acertaste!")
-                    mm_numero_referencia = mm_numero_comparar
+                if mm_opcion == "mayor":
+                    if mm_numero_referencia < mm_numero_comparar:
+                        mm_racha = mm_racha + 1
+                        print("\n  ✓ ¡Acertaste!")
+                        mm_numero_referencia = mm_numero_comparar
+                    else:
+                        print("\n  ✗ Incorrecto. El número era menor.")
+                        mm_juego_finalizado = 1
                 else:
-                    print("\n  ✗ Incorrecto. El número era mayor.")
-                    mm_juego_finalizado = 1
-    mm_rachas[mm_indice_jugador] = mm_racha
-    print("\n================================================")
-    print(f"|                                      |")
-    print(f"|     ♠  G A M E  O V E R  ♠           |")
-    print(f"|                                      |")
-    print(f"|     {mm_nombre_jugador}, tu racha fue: {mm_racha}           |")
-    print(f"|                                      |")
-    print("================================================")
-    input("\nPresione la tecla 'Enter' para continuar...")
+                    if mm_numero_referencia > mm_numero_comparar:
+                        mm_racha = mm_racha + 1
+                        print("\n  ✓ ¡Acertaste!")
+                        mm_numero_referencia = mm_numero_comparar
+                    else:
+                        print("\n  ✗ Incorrecto. El número era mayor.")
+                        mm_juego_finalizado = 1
+        mm_rachas[mm_indice_jugador] = mm_racha
+        print("\n================================================")
+        print(f"|                                      |")
+        print(f"|     ♠  G A M E  O V E R  ♠           |")
+        print(f"|                                      |")
+        print(f"|     {mm_nombre_jugador}, tu racha fue: {mm_racha}           |")
+        print(f"|                                      |")
+        print("================================================")
+        input("\nPresione la tecla 'Enter' para continuar...")
 
 
 def juego_numero_secreto():
@@ -200,8 +259,13 @@ def juego_numero_secreto():
         ns_adivino:bool (indica si el jugador acertó el número secreto)
         ns_entrada_valida:bool (indica si el valor ingresado pasó las validaciones)
         ns_entrada_texto:str (entrada del usuario antes de convertirla a número)
-        ns_es_numero:bool (indica si la entrada contiene únicamente dígitos)
+        ns_es_numero:int (indica si la entrada contiene unicamente digitos)
         ns_intento_actual:int (número ingresado por el jugador en el intento actual)
+        ns_nombre_valido:int (indica si el nombre ingresado no esta vacio)
+        ns_salir:int (indica si se debe salir de la funcion sin jugar)
+        ns_indice_digito:int (posicion para recorrer cada caracter de la entrada)
+        ns_caracter:str (caracter actual siendo evaluado)
+        ns_solo_digitos:int (bandera: 1 si todos los caracteres son digitos)
     """
     global ns_nombre_ultimo_jugador, ns_cantidad_jugadores
 
@@ -210,11 +274,14 @@ def juego_numero_secreto():
     print("  Tenés 6 intentos para adivinar el número\n")
     print("================================================\n")
 
-    while True:
+    # Validacion de nombre sin break
+    ns_nombre_valido = 0
+    while ns_nombre_valido == 0:
         ns_nombre_jugador = input("Escribí tu nombre: ").strip()
         if ns_nombre_jugador != "":
-            break
-        print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
+            ns_nombre_valido = 1
+        else:
+            print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
 
     ns_indice_jugador = buscar_jugador(
         ns_nombres,
@@ -222,84 +289,102 @@ def juego_numero_secreto():
         ns_nombre_jugador
     )
 
+    ns_salir = 0
+
     if ns_indice_jugador == -1:
         if ns_cantidad_jugadores == MAX_JUGADORES:
             print("\n  ✗ No hay cupos para nuevos jugadores.")
             print("  Se alcanzó el límite de 10 jugadores.")
             input("\nPresione la tecla 'Enter' para continuar...")
-            return
+            ns_salir = 1
 
-        ns_nombres[ns_cantidad_jugadores] = ns_nombre_jugador
-        ns_jugadas[ns_cantidad_jugadores] = 0
-        ns_ganadas[ns_cantidad_jugadores] = 0
-        ns_perdidas[ns_cantidad_jugadores] = 0
+        if ns_salir == 0:
+            ns_nombres[ns_cantidad_jugadores] = ns_nombre_jugador
+            ns_jugadas[ns_cantidad_jugadores] = 0
+            ns_ganadas[ns_cantidad_jugadores] = 0
+            ns_perdidas[ns_cantidad_jugadores] = 0
 
-        ns_indice_jugador = ns_cantidad_jugadores
-        ns_cantidad_jugadores = ns_cantidad_jugadores + 1
+            ns_indice_jugador = ns_cantidad_jugadores
+            ns_cantidad_jugadores = ns_cantidad_jugadores + 1
 
-        print(f"\n  ✓ Nuevo jugador registrado: {ns_nombre_jugador}")
+            print(f"\n  ✓ Nuevo jugador registrado: {ns_nombre_jugador}")
     else:
         print(f"\n  ✓ Bienvenido nuevamente, {ns_nombres[ns_indice_jugador]}")
-    print(f"\n| Bienvenido, {ns_nombre_jugador} ♠          |")
 
-    NS_MAX_INTENTOS = 6
-    NS_RANGO_MAX = 100
-    NS_RANGO_MIN = 1
-    ns_numero_secreto = random.randint(NS_RANGO_MIN, NS_RANGO_MAX)
-    ns_intentos_usados = 0
-    ns_adivino = False
+    if ns_salir == 0:
+        print(f"\n| Bienvenido, {ns_nombre_jugador} ♠          |")
 
-    print(f"\n  Pensé un número del {NS_RANGO_MIN} al {NS_RANGO_MAX}")
+        NS_MAX_INTENTOS = 6
+        NS_RANGO_MAX = 100
+        NS_RANGO_MIN = 1
+        ns_numero_secreto = random.randint(NS_RANGO_MIN, NS_RANGO_MAX)
+        ns_intentos_usados = 0
+        ns_adivino = False
 
-    while ns_intentos_usados < NS_MAX_INTENTOS and not ns_adivino:
-        print("----------------------------------------")
-        ns_intentos_restantes = NS_MAX_INTENTOS - ns_intentos_usados
-        print(f"  Te quedan {ns_intentos_restantes} intento(s)")
+        print(f"\n  Pensé un número del {NS_RANGO_MIN} al {NS_RANGO_MAX}")
 
-        ns_entrada_valida = False
-        while not ns_entrada_valida:
-            ns_entrada_texto = input("  Ingresá tu número: ").strip()
-            ns_es_numero = ns_entrada_texto.isdigit()
+        while ns_intentos_usados < NS_MAX_INTENTOS and not ns_adivino:
+            print("----------------------------------------")
+            ns_intentos_restantes = NS_MAX_INTENTOS - ns_intentos_usados
+            print(f"  Te quedan {ns_intentos_restantes} intento(s)")
 
-            if not ns_es_numero:
-                print("  ✗ Solo números enteros positivos")
-            else:
-                ns_intento_actual = int(ns_entrada_texto)
-                if ns_intento_actual < NS_RANGO_MIN or ns_intento_actual > NS_RANGO_MAX:
-                    print(f"  ✗ El número debe estar entre {NS_RANGO_MIN} y {NS_RANGO_MAX}")
+            ns_entrada_valida = False
+            ns_intento_actual = 0
+            while not ns_entrada_valida:
+                ns_entrada_texto = input("  Ingresá tu número: ").strip()
+
+                # Validacion de digitos sin isdigit(), len() ni for():
+                # Se verifica que el string no este vacio y se recorre cada
+                # caracter mediante while indexado.
+                ns_solo_digitos = 0
+                if ns_entrada_texto != "":
+                    ns_solo_digitos = 1
+                    ns_indice_digito = 0
+                    while ns_indice_digito < 10 and ns_solo_digitos == 1:
+                        ns_caracter = ns_entrada_texto[ns_indice_digito]
+                        if ns_caracter < '0' or ns_caracter > '9':
+                            ns_solo_digitos = 0
+                        ns_indice_digito = ns_indice_digito + 1
+
+                if ns_solo_digitos == 0:
+                    print("  ✗ Solo números enteros positivos")
                 else:
-                    ns_entrada_valida = True
+                    ns_intento_actual = ns_convertir_a_entero(ns_entrada_texto)
+                    if ns_intento_actual < NS_RANGO_MIN or ns_intento_actual > NS_RANGO_MAX:
+                        print(f"  ✗ El número debe estar entre {NS_RANGO_MIN} y {NS_RANGO_MAX}")
+                    else:
+                        ns_entrada_valida = True
 
-        if ns_intento_actual == ns_numero_secreto:
-            ns_adivino = True
-            print(f"\n  ✓ ¡Acertaste! El número era {ns_numero_secreto}")
-        elif ns_intento_actual < ns_numero_secreto:
-            print("  El número secreto es mayor. Intentá de nuevo")
+            if ns_intento_actual == ns_numero_secreto:
+                ns_adivino = True
+                print(f"\n  ✓ ¡Acertaste! El número era {ns_numero_secreto}")
+            elif ns_intento_actual < ns_numero_secreto:
+                print("  El número secreto es mayor. Intentá de nuevo")
+            else:
+                print("  El número secreto es menor. Intentá de nuevo")
+
+            ns_intentos_usados = ns_intentos_usados + 1
+
+        print("\n================================================")
+        print(f"|                                      |")
+        print(f"|     ♠  G A M E  O V E R  ♠           |")
+        print(f"|                                      |")
+        if ns_adivino:
+            print(f"|     {ns_nombre_jugador}, lo adivinaste en {ns_intentos_usados} intentos!   |")
         else:
-            print("  El número secreto es menor. Intentá de nuevo")
+            print(f"|     El número era: {ns_numero_secreto}                    |")
+        print(f"|                                      |")
+        print("================================================")
 
-        ns_intentos_usados = ns_intentos_usados + 1
+        ns_jugadas[ns_indice_jugador] = ns_jugadas[ns_indice_jugador] + 1
 
-    print("\n================================================")
-    print(f"|                                      |")
-    print(f"|     ♠  G A M E  O V E R  ♠           |")
-    print(f"|                                      |")
-    if ns_adivino:
-        print(f"|     {ns_nombre_jugador}, lo adivinaste en {ns_intentos_usados} intentos!   |")
-    else:
-        print(f"|     El número era: {ns_numero_secreto}                    |")
-    print(f"|                                      |")
-    print("================================================")
+        if ns_adivino:
+            ns_ganadas[ns_indice_jugador] = ns_ganadas[ns_indice_jugador] + 1
+        else:
+            ns_perdidas[ns_indice_jugador] = ns_perdidas[ns_indice_jugador] + 1
 
-    ns_jugadas[ns_indice_jugador] = ns_jugadas[ns_indice_jugador] + 1
-
-    if ns_adivino:
-        ns_ganadas[ns_indice_jugador] = ns_ganadas[ns_indice_jugador] + 1
-    else:
-        ns_perdidas[ns_indice_jugador] = ns_perdidas[ns_indice_jugador] + 1
-
-    ns_nombre_ultimo_jugador = ns_nombre_jugador
-    input("\nPresione la tecla 'Enter' para continuar...")
+        ns_nombre_ultimo_jugador = ns_nombre_jugador
+        input("\nPresione la tecla 'Enter' para continuar...")
 
 
 def juego_blackjack():
@@ -322,13 +407,18 @@ def juego_blackjack():
         bj_puntos_jugador:int (puntuación total de la mano del jugador)
         bj_puntos_banca:int (puntuación total de la mano de la banca)
         bj_indice:int (posición utilizada para recorrer las manos de cartas)
-        bj_carta:tuple (carta actual mostrada durante el recorrido de una mano)
-        bj_carta_nueva:tuple (última carta entregada al jugador o a la banca)
+        bj_carta:list (carta actual mostrada durante el recorrido de una mano)
+        bj_carta_nueva:list (última carta entregada al jugador o a la banca)
         bj_partida_inicial_finalizada:bool (indica si la partida terminó con el reparto inicial)
         bj_turno_activo:bool (indica si el jugador continúa tomando decisiones)
         bj_opcion:str (elección del jugador: pedir o plantarse)
         bj_banca_blackjack:bool (indica si la banca tiene Blackjack natural)
         bj_jugador_blackjack:bool (indica si el jugador tiene Blackjack natural)
+        bj_nombre_valido:int (indica si el nombre ingresado no esta vacio)
+        bj_salir:int (indica si se debe salir de la funcion sin jugar)
+        bj_i:int (posicion para el barajado Fisher-Yates)
+        bj_j:int (posicion aleatoria para intercambio en Fisher-Yates)
+        bj_aux:list (variable temporal para intercambiar dos cartas)
     """
     global bj_nombre_ultimo_jugador, bj_cantidad_jugadores
     BJ_PALOS = ["♠", "♥", "♦", "♣"]
@@ -339,11 +429,14 @@ def juego_blackjack():
     print("  El objetivo es sumar 21 sin pasarte\n")
     print("================================================\n")
 
-    while True:
+    # Validacion de nombre sin break
+    bj_nombre_valido = 0
+    while bj_nombre_valido == 0:
         bj_nombre_jugador = input("Escribí tu nombre: ").strip()
         if bj_nombre_jugador != "":
-            break
-        print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
+            bj_nombre_valido = 1
+        else:
+            print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
 
     bj_indice_jugador = buscar_jugador(
         bj_jugadores,
@@ -351,266 +444,284 @@ def juego_blackjack():
         bj_nombre_jugador
     )
 
+    bj_salir = 0
+
     if bj_indice_jugador == -1:
         if bj_cantidad_jugadores == MAX_JUGADORES:
             print("\n  ✗ No hay cupos para nuevos jugadores.")
             print("  Se alcanzó el límite de 10 jugadores.")
             input("\nPresione la tecla 'Enter' para continuar...")
-            return
+            bj_salir = 1
 
-        bj_jugadores[bj_cantidad_jugadores] = bj_nombre_jugador
-        bj_jugadas[bj_cantidad_jugadores] = 0
-        bj_ganadas[bj_cantidad_jugadores] = 0
-        bj_perdidas[bj_cantidad_jugadores] = 0
-        bj_empatadas[bj_cantidad_jugadores] = 0
+        if bj_salir == 0:
+            bj_jugadores[bj_cantidad_jugadores] = bj_nombre_jugador
+            bj_jugadas[bj_cantidad_jugadores] = 0
+            bj_ganadas[bj_cantidad_jugadores] = 0
+            bj_perdidas[bj_cantidad_jugadores] = 0
+            bj_empatadas[bj_cantidad_jugadores] = 0
 
-        bj_indice_jugador = bj_cantidad_jugadores
-        bj_cantidad_jugadores = bj_cantidad_jugadores + 1
+            bj_indice_jugador = bj_cantidad_jugadores
+            bj_cantidad_jugadores = bj_cantidad_jugadores + 1
 
-        print(f"\n  ✓ Nuevo jugador registrado: {bj_nombre_jugador}")
+            print(f"\n  ✓ Nuevo jugador registrado: {bj_nombre_jugador}")
     else:
         print(f"\n  ✓ Bienvenido nuevamente, {bj_jugadores[bj_indice_jugador]}")
 
-    print(f"\n| Bienvenido, {bj_nombre_jugador} ♠          |")
-    bj_nombre_ultimo_jugador = bj_nombre_jugador
+    if bj_salir == 0:
+        print(f"\n| Bienvenido, {bj_nombre_jugador} ♠          |")
+        bj_nombre_ultimo_jugador = bj_nombre_jugador
 
-    bj_jugar_otra = "S"
-    while bj_jugar_otra == "S":
-        bj_mazo = [
-            None, None, None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None, None, None,
-            None, None
-        ]
+        bj_jugar_otra = "S"
+        while bj_jugar_otra == "S":
+            bj_mazo = [
+                None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None,
+                None, None
+            ]
 
-        bj_indice_mazo = 0
-        bj_indice_palo = 0
+            bj_indice_mazo = 0
+            bj_indice_palo = 0
 
-        while bj_indice_palo < 4:
-            bj_indice_rango = 0
+            while bj_indice_palo < 4:
+                bj_indice_rango = 0
 
-            while bj_indice_rango < 13:
-                bj_mazo[bj_indice_mazo] = (
-                    BJ_RANGOS[bj_indice_rango],
-                    BJ_PALOS[bj_indice_palo]
-                )
+                while bj_indice_rango < 13:
+                    # Carta representada como lista [rango, palo] en vez de tupla
+                    bj_mazo[bj_indice_mazo] = [
+                        BJ_RANGOS[bj_indice_rango],
+                        BJ_PALOS[bj_indice_palo]
+                    ]
 
-                bj_indice_mazo = bj_indice_mazo + 1
-                bj_indice_rango = bj_indice_rango + 1
+                    bj_indice_mazo = bj_indice_mazo + 1
+                    bj_indice_rango = bj_indice_rango + 1
 
-            bj_indice_palo = bj_indice_palo + 1
-        random.shuffle(bj_mazo)
-        bj_indice_carta = 0
+                bj_indice_palo = bj_indice_palo + 1
 
-        bj_cartas_jugador = [
-            None, None, None, None, None,
-            None, None, None, None, None, None
-        ]
+            # ALGORITMO: Barajado Fisher-Yates (reemplazo de random.shuffle)
+            # Recorre el mazo desde la ultima posicion hasta la primera.
+            # En cada paso elige una posicion aleatoria entre 0 y la actual
+            # e intercambia las dos cartas. Esto garantiza una permutacion
+            # uniforme sin necesidad de la funcion shuffle().
+            bj_i = 51
+            while bj_i > 0:
+                bj_j = random.randint(0, bj_i)
+                bj_aux = bj_mazo[bj_i]
+                bj_mazo[bj_i] = bj_mazo[bj_j]
+                bj_mazo[bj_j] = bj_aux
+                bj_i = bj_i - 1
 
-        bj_cartas_banca = [
-            None, None, None, None, None,
-            None, None, None, None, None, None
-        ]
+            bj_indice_carta = 0
 
-        bj_cantidad_cartas_jugador = 0
-        bj_cantidad_cartas_banca = 0
-        bj_puntos_jugador = 0
-        bj_puntos_banca = 0
+            bj_cartas_jugador = [
+                None, None, None, None, None,
+                None, None, None, None, None, None
+            ]
 
-        print("\n================================================")
-        print("          NUEVA PARTIDA")
-        print("================================================\n")
+            bj_cartas_banca = [
+                None, None, None, None, None,
+                None, None, None, None, None, None
+            ]
 
-        bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
-        bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
-        bj_indice_carta = bj_indice_carta + 1
+            bj_cantidad_cartas_jugador = 0
+            bj_cantidad_cartas_banca = 0
+            bj_puntos_jugador = 0
+            bj_puntos_banca = 0
 
-        bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
-        bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
-        bj_indice_carta = bj_indice_carta + 1
+            print("\n================================================")
+            print("          NUEVA PARTIDA")
+            print("================================================\n")
 
-        bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
-        bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
-        bj_indice_carta = bj_indice_carta + 1
+            bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
+            bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+            bj_indice_carta = bj_indice_carta + 1
 
-        bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
-        bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
-        bj_indice_carta = bj_indice_carta + 1
+            bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
+            bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+            bj_indice_carta = bj_indice_carta + 1
 
-        print("  Cartas de la Banca:")
-        bj_indice = 0
+            bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
+            bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+            bj_indice_carta = bj_indice_carta + 1
 
-        while bj_indice < bj_cantidad_cartas_banca:
-            bj_carta = bj_cartas_banca[bj_indice]
-            print(f"    [{bj_carta[0]}{bj_carta[1]}]")
-            bj_indice = bj_indice + 1
+            bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
+            bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+            bj_indice_carta = bj_indice_carta + 1
 
-        print("\n  Cartas de", bj_nombre_jugador + ":")
-        bj_indice = 0
+            print("  Cartas de la Banca:")
+            bj_indice = 0
 
-        while bj_indice < bj_cantidad_cartas_jugador:
-            bj_carta = bj_cartas_jugador[bj_indice]
-            print(f"    [{bj_carta[0]}{bj_carta[1]}]")
-            bj_indice = bj_indice + 1
-        bj_puntos_jugador = bj_calcular_puntos(bj_cartas_jugador, bj_cantidad_cartas_jugador)
-        print(f"\n  Tu puntuación: {bj_puntos_jugador}")
+            while bj_indice < bj_cantidad_cartas_banca:
+                bj_carta = bj_cartas_banca[bj_indice]
+                print(f"    [{bj_carta[0]}{bj_carta[1]}]")
+                bj_indice = bj_indice + 1
 
-        if bj_puntos_jugador == 21:
-            print("  ♠ ¡BLACKJACK! Sumaste 21 con las dos cartas.")
-            bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
-            print(f"\n  Puntuación Banca: {bj_puntos_banca}")
-            if bj_puntos_banca != 21:
-                print("\n  >>> ¡GANASTE! <<<")
-                bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
+            print("\n  Cartas de", bj_nombre_jugador + ":")
+            bj_indice = 0
+
+            while bj_indice < bj_cantidad_cartas_jugador:
+                bj_carta = bj_cartas_jugador[bj_indice]
+                print(f"    [{bj_carta[0]}{bj_carta[1]}]")
+                bj_indice = bj_indice + 1
+            bj_puntos_jugador = bj_calcular_puntos(bj_cartas_jugador, bj_cantidad_cartas_jugador)
+            print(f"\n  Tu puntuación: {bj_puntos_jugador}")
+
+            if bj_puntos_jugador == 21:
+                print("  ♠ ¡BLACKJACK! Sumaste 21 con las dos cartas.")
+                bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
+                print(f"\n  Puntuación Banca: {bj_puntos_banca}")
+                if bj_puntos_banca != 21:
+                    print("\n  >>> ¡GANASTE! <<<")
+                    bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
+                else:
+                    print("\n  >>> EMPATE (ambos con Blackjack) <<<")
+                    bj_empatadas[bj_indice_jugador] = bj_empatadas[bj_indice_jugador] + 1
+                bj_jugadas[bj_indice_jugador] = bj_jugadas[bj_indice_jugador] + 1
+                print("\n----------------------------------------")
+                print("  ESTADÍSTICAS DE BLACKJACK:")
+                print(f"    Jugador: {bj_jugadores[bj_indice_jugador]}")
+                print(f"    Partidas jugadas: {bj_jugadas[bj_indice_jugador]}")
+                print(f"    Ganadas: {bj_ganadas[bj_indice_jugador]}")
+                print(f"    Perdidas: {bj_perdidas[bj_indice_jugador]}")
+                print(f"    Empatadas: {bj_empatadas[bj_indice_jugador]}")
+                print("----------------------------------------")
+                bj_jugar_otra = ""
+                while bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                    bj_jugar_otra = input("\n¿Querés jugar otra partida? (S/N): ").strip().upper()
+                    if bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                        print("  ✗ Opción inválida. Ingresá S o N.")
+                if bj_jugar_otra == "S":
+                    print("\n  ✓ Comenzando nueva partida...")
+                else:
+                    print("\n  Volviendo al menú principal...")
+                bj_partida_inicial_finalizada = True
             else:
-                print("\n  >>> EMPATE (ambos con Blackjack) <<<")
-                bj_empatadas[bj_indice_jugador] = bj_empatadas[bj_indice_jugador] + 1
-            bj_jugadas[bj_indice_jugador] = bj_jugadas[bj_indice_jugador] + 1
-            print("\n----------------------------------------")
-            print("  ESTADÍSTICAS DE BLACKJACK:")
-            print(f"    Jugador: {bj_jugadores[bj_indice_jugador]}")
-            print(f"    Partidas jugadas: {bj_jugadas[bj_indice_jugador]}")
-            print(f"    Ganadas: {bj_ganadas[bj_indice_jugador]}")
-            print(f"    Perdidas: {bj_perdidas[bj_indice_jugador]}")
-            print(f"    Empatadas: {bj_empatadas[bj_indice_jugador]}")
-            print("----------------------------------------")
-            bj_jugar_otra = ""
-            while bj_jugar_otra != "S" and bj_jugar_otra != "N":
-                bj_jugar_otra = input("\n¿Querés jugar otra partida? (S/N): ").strip().upper()
-                if bj_jugar_otra != "S" and bj_jugar_otra != "N":
-                    print("  ✗ Opción inválida. Ingresá S o N.")
-            if bj_jugar_otra == "S":
-                print("\n  ✓ Comenzando nueva partida...")
-            else:
-                print("\n  Volviendo al menú principal...")
-            bj_partida_inicial_finalizada = True
-        else:
-            bj_partida_inicial_finalizada = False
+                bj_partida_inicial_finalizada = False
 
-        if bj_partida_inicial_finalizada == False:
-            bj_turno_activo = True
-            while bj_turno_activo:
-                bj_opcion = ""
-                while bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
-                    bj_opcion = input('\n  "Pedir" otra carta o "Plantarte": ').strip().upper()
-                    if bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
-                        print('  ✗ Opción inválida. Escribí "Pedir" o "Plantarse".')
+            if bj_partida_inicial_finalizada == False:
+                bj_turno_activo = True
+                while bj_turno_activo:
+                    bj_opcion = ""
+                    while bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
+                        bj_opcion = input('\n  "Pedir" otra carta o "Plantarte": ').strip().upper()
+                        if bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
+                            print('  ✗ Opción inválida. Escribí "Pedir" o "Plantarse".')
 
-                if bj_opcion == "PEDIR":
-                    bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
+                    if bj_opcion == "PEDIR":
+                        bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
 
-                    bj_carta_nueva = bj_cartas_jugador[bj_cantidad_cartas_jugador]
+                        bj_carta_nueva = bj_cartas_jugador[bj_cantidad_cartas_jugador]
 
-                    bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
-                    bj_indice_carta = bj_indice_carta + 1
+                        bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+                        bj_indice_carta = bj_indice_carta + 1
 
-                    print(f"\n  Sacaste: [{bj_carta_nueva[0]}{bj_carta_nueva[1]}]")
-                    print("  Tu mano:")
+                        print(f"\n  Sacaste: [{bj_carta_nueva[0]}{bj_carta_nueva[1]}]")
+                        print("  Tu mano:")
+                        bj_indice = 0
+
+                        while bj_indice < bj_cantidad_cartas_jugador:
+                            bj_carta = bj_cartas_jugador[bj_indice]
+                            print(f"    [{bj_carta[0]}{bj_carta[1]}]")
+                            bj_indice = bj_indice + 1
+                        bj_puntos_jugador = bj_calcular_puntos(bj_cartas_jugador, bj_cantidad_cartas_jugador)
+                        print(f"\n  Tu puntuación: {bj_puntos_jugador}")
+
+                        if bj_puntos_jugador > 21:
+                            print("\n  ✗ ¡Te pasaste de 21! Perdiste automáticamente.")
+                            bj_turno_activo = False
+                        elif bj_puntos_jugador == 21:
+                            print("\n  ♠ ¡Llegaste a 21! Pasás el turno a la banca.")
+                            bj_turno_activo = False
+                    else:
+                        print(f"\n  Te plantaste con {bj_puntos_jugador} puntos.")
+                        bj_turno_activo = False
+
+                if bj_puntos_jugador <= 21:
+                    print("\n----------------------------------------")
+                    print("  Turno de la Banca:")
+                    print("  Cartas de la Banca:")
                     bj_indice = 0
-
-                    while bj_indice < bj_cantidad_cartas_jugador:
-                        bj_carta = bj_cartas_jugador[bj_indice]
+                    while bj_indice < bj_cantidad_cartas_banca:
+                        bj_carta = bj_cartas_banca[bj_indice]
                         print(f"    [{bj_carta[0]}{bj_carta[1]}]")
                         bj_indice = bj_indice + 1
-                    bj_puntos_jugador = bj_calcular_puntos(bj_cartas_jugador, bj_cantidad_cartas_jugador)
-                    print(f"\n  Tu puntuación: {bj_puntos_jugador}")
-
-                    if bj_puntos_jugador > 21:
-                        print("\n  ✗ ¡Te pasaste de 21! Perdiste automáticamente.")
-                        bj_turno_activo = False
-                    elif bj_puntos_jugador == 21:
-                        print("\n  ♠ ¡Llegaste a 21! Pasás el turno a la banca.")
-                        bj_turno_activo = False
-                else:
-                    print(f"\n  Te plantaste con {bj_puntos_jugador} puntos.")
-                    bj_turno_activo = False
-
-            if bj_puntos_jugador <= 21:
-                print("\n----------------------------------------")
-                print("  Turno de la Banca:")
-                print("  Cartas de la Banca:")
-                bj_indice = 0
-                while bj_indice < bj_cantidad_cartas_banca:
-                    bj_carta = bj_cartas_banca[bj_indice]
-                    print(f"    [{bj_carta[0]}{bj_carta[1]}]")
-                    bj_indice = bj_indice + 1
-                bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
-                print(f"  Puntuación Banca: {bj_puntos_banca}")
-
-                while bj_puntos_banca <= 16:
-                    bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
-
-                    bj_carta_nueva = bj_cartas_banca[bj_cantidad_cartas_banca]
-
-                    bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
-                    bj_indice_carta = bj_indice_carta + 1
-
-                    print(f"\n  La banca pide carta: [{bj_carta_nueva[0]}{bj_carta_nueva[1]}]")
                     bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
                     print(f"  Puntuación Banca: {bj_puntos_banca}")
 
-                print("\n----------------------------------------")
-                if bj_puntos_banca > 21:
-                    print("\n  >>> ¡GANASTE! La banca se pasó de 21. <<<")
-                    bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
-                elif bj_puntos_jugador > bj_puntos_banca:
-                    print(f"\n  >>> ¡GANASTE! Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
-                    bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
-                elif bj_puntos_jugador < bj_puntos_banca:
-                    print(f"\n  >>> PERDISTE. Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
-                    bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
-                else:
-                    #Empate a 21: si la banca tiene blackjack natural (2 cartas) y el jugador no, gana la banca
-                    bj_banca_blackjack = (
-                        bj_cantidad_cartas_banca == 2
-                        and bj_puntos_banca == 21
-                    )
+                    while bj_puntos_banca <= 16:
+                        bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
 
-                    bj_jugador_blackjack = (
-                        bj_cantidad_cartas_jugador == 2
-                        and bj_puntos_jugador == 21
-                    )
-                    if bj_banca_blackjack and not bj_jugador_blackjack:
-                        print("\n  >>> PERDISTE. La banca tiene Blackjack natural. <<<")
+                        bj_carta_nueva = bj_cartas_banca[bj_cantidad_cartas_banca]
+
+                        bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+                        bj_indice_carta = bj_indice_carta + 1
+
+                        print(f"\n  La banca pide carta: [{bj_carta_nueva[0]}{bj_carta_nueva[1]}]")
+                        bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
+                        print(f"  Puntuación Banca: {bj_puntos_banca}")
+
+                    print("\n----------------------------------------")
+                    if bj_puntos_banca > 21:
+                        print("\n  >>> ¡GANASTE! La banca se pasó de 21. <<<")
+                        bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
+                    elif bj_puntos_jugador > bj_puntos_banca:
+                        print(f"\n  >>> ¡GANASTE! Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
+                        bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
+                    elif bj_puntos_jugador < bj_puntos_banca:
+                        print(f"\n  >>> PERDISTE. Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
                         bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
                     else:
-                        print(f"\n  >>> EMPATE. Ambos con {bj_puntos_jugador} puntos <<<")
-                        bj_empatadas[bj_indice_jugador] = bj_empatadas[bj_indice_jugador] + 1
-            else:
-                bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
-                bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
-                print(f"\n  Puntuación Banca (no necesitó jugar): {bj_puntos_banca}")
+                        #Empate a 21: si la banca tiene blackjack natural (2 cartas) y el jugador no, gana la banca
+                        bj_banca_blackjack = (
+                            bj_cantidad_cartas_banca == 2
+                            and bj_puntos_banca == 21
+                        )
 
-            bj_jugadas[bj_indice_jugador] = bj_jugadas[bj_indice_jugador] + 1
-            print("\n----------------------------------------")
-            print("  ESTADÍSTICAS DE BLACKJACK:")
-            print(f"    Jugador: {bj_jugadores[bj_indice_jugador]}")
-            print(f"    Partidas jugadas: {bj_jugadas[bj_indice_jugador]}")
-            print(f"    Ganadas: {bj_ganadas[bj_indice_jugador]}")
-            print(f"    Perdidas: {bj_perdidas[bj_indice_jugador]}")
-            print(f"    Empatadas: {bj_empatadas[bj_indice_jugador]}")
-            print("----------------------------------------")
+                        bj_jugador_blackjack = (
+                            bj_cantidad_cartas_jugador == 2
+                            and bj_puntos_jugador == 21
+                        )
+                        if bj_banca_blackjack and not bj_jugador_blackjack:
+                            print("\n  >>> PERDISTE. La banca tiene Blackjack natural. <<<")
+                            bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
+                        else:
+                            print(f"\n  >>> EMPATE. Ambos con {bj_puntos_jugador} puntos <<<")
+                            bj_empatadas[bj_indice_jugador] = bj_empatadas[bj_indice_jugador] + 1
+                else:
+                    bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
+                    bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
+                    print(f"\n  Puntuación Banca (no necesitó jugar): {bj_puntos_banca}")
 
-            bj_jugar_otra = ""
-            while bj_jugar_otra != "S" and bj_jugar_otra != "N":
-                bj_jugar_otra = input("\n¿Querés jugar otra partida? (S/N): ").strip().upper()
-                if bj_jugar_otra != "S" and bj_jugar_otra != "N":
-                    print("  ✗ Opción inválida. Ingresá S o N.")
+                bj_jugadas[bj_indice_jugador] = bj_jugadas[bj_indice_jugador] + 1
+                print("\n----------------------------------------")
+                print("  ESTADÍSTICAS DE BLACKJACK:")
+                print(f"    Jugador: {bj_jugadores[bj_indice_jugador]}")
+                print(f"    Partidas jugadas: {bj_jugadas[bj_indice_jugador]}")
+                print(f"    Ganadas: {bj_ganadas[bj_indice_jugador]}")
+                print(f"    Perdidas: {bj_perdidas[bj_indice_jugador]}")
+                print(f"    Empatadas: {bj_empatadas[bj_indice_jugador]}")
+                print("----------------------------------------")
 
-            if bj_jugar_otra == "S":
-                print("\n  ✓ Comenzando nueva partida...")
-            else:
-                print("\n================================================")
-                print("|                                      |")
-                print("|     ♠  G A M E  O V E R  ♠           |")
-                print("|                                      |")
-                print(f"|     Volviendo al menú principal...    |")
-                print("|                                      |")
-                print("================================================")
+                bj_jugar_otra = ""
+                while bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                    bj_jugar_otra = input("\n¿Querés jugar otra partida? (S/N): ").strip().upper()
+                    if bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                        print("  ✗ Opción inválida. Ingresá S o N.")
 
-    input("\nPresione la tecla 'Enter' para continuar...")
+                if bj_jugar_otra == "S":
+                    print("\n  ✓ Comenzando nueva partida...")
+                else:
+                    print("\n================================================")
+                    print("|                                      |")
+                    print("|     ♠  G A M E  O V E R  ♠           |")
+                    print("|                                      |")
+                    print(f"|     Volviendo al menú principal...    |")
+                    print("|                                      |")
+                    print("================================================")
+
+        input("\nPresione la tecla 'Enter' para continuar...")
 
 
 
@@ -637,7 +748,8 @@ def bj_calcular_puntos(bj_cartas, bj_cantidad_cartas):
         elif bj_rango == "J" or bj_rango == "Q" or bj_rango == "K":
             bj_total = bj_total + 10
         else:
-            bj_total = bj_total + int(bj_rango)
+            # bj_rango es un string '2'..'9' o '10'; convertir sin int()
+            bj_total = bj_total + convertir_digitos_a_entero(bj_rango)
 
         bj_indice = bj_indice + 1
 
@@ -663,6 +775,11 @@ def juego_par_o_impar():
         pi_suma_dados:int (suma de los resultados de ambos dados)
         pi_paridad:str (clasificación de la suma como Par o Impar)
         pi_opcion_usuario:str (opción para seguir jugando o salir)
+        pi_nombre_valido:int (indica si el nombre ingresado no esta vacio)
+        pi_salir:int (indica si se debe salir de la funcion sin jugar)
+        pi_solo_digitos:int (bandera: 1 si todos los caracteres son digitos)
+        pi_indice_digito:int (posicion para recorrer cada caracter de la entrada)
+        pi_caracter:str (caracter actual siendo evaluado)
     """
     global pi_nombre_ultimo_jugador, pi_cantidad_jugadores
     pi_juego_activo = True
@@ -671,10 +788,15 @@ def juego_par_o_impar():
     print ("  ♠ Juego: Dados ♠")
     print ("  Adiviná si la suma de los dados será par o impar\n")
     print("================================================\n")
-    pi_nombre_jugador = input("Escribe tu nombre: ").strip()
-    while pi_nombre_jugador == "":
-        print("\n  ✗ Nombre vacío: Por favor escribe tu nombre\n")
+
+    # Validacion de nombre sin break
+    pi_nombre_valido = 0
+    while pi_nombre_valido == 0:
         pi_nombre_jugador = input("Escribe tu nombre: ").strip()
+        if pi_nombre_jugador != "":
+            pi_nombre_valido = 1
+        else:
+            print("\n  ✗ Nombre vacío: Por favor escribe tu nombre\n")
 
     pi_indice_jugador = buscar_jugador(
         pi_nombres,
@@ -682,120 +804,144 @@ def juego_par_o_impar():
         pi_nombre_jugador
     )
 
+    pi_salir = 0
+
     if pi_indice_jugador == -1:
         if pi_cantidad_jugadores == MAX_JUGADORES:
             print("\n  ✗ No hay cupos para nuevos jugadores.")
             print("  Se alcanzó el límite de 10 jugadores.")
             input("\nPresione la tecla 'Enter' para continuar...")
-            return
+            pi_salir = 1
 
-        pi_nombres[pi_cantidad_jugadores] = pi_nombre_jugador
-        pi_jugadas[pi_cantidad_jugadores] = 0
-        pi_ganadas[pi_cantidad_jugadores] = 0
-        pi_perdidas[pi_cantidad_jugadores] = 0
-        pi_creditos[pi_cantidad_jugadores] = 1000
+        if pi_salir == 0:
+            pi_nombres[pi_cantidad_jugadores] = pi_nombre_jugador
+            pi_jugadas[pi_cantidad_jugadores] = 0
+            pi_ganadas[pi_cantidad_jugadores] = 0
+            pi_perdidas[pi_cantidad_jugadores] = 0
+            pi_creditos[pi_cantidad_jugadores] = 1000
 
-        pi_indice_jugador = pi_cantidad_jugadores
-        pi_cantidad_jugadores = pi_cantidad_jugadores + 1
+            pi_indice_jugador = pi_cantidad_jugadores
+            pi_cantidad_jugadores = pi_cantidad_jugadores + 1
 
-        print(f"\n  ✓ Nuevo jugador registrado: {pi_nombre_jugador}")
+            print(f"\n  ✓ Nuevo jugador registrado: {pi_nombre_jugador}")
     else:
         print(f"\n  ✓ Bienvenido nuevamente, {pi_nombres[pi_indice_jugador]}")
-    pi_nombre_ultimo_jugador = pi_nombre_jugador
-    print(f"\n| Bienvenido, {pi_nombre_jugador} ♠          |")
-    while pi_juego_activo:
-        if pi_creditos[pi_indice_jugador] == 0:
-            print("\n  ✗ Te quedaste sin crédito.")
-            print("  No podés continuar jugando.")
-            pi_juego_activo = False
-            break
-        print(f"\nCrédito disponible: ${pi_creditos[pi_indice_jugador]}")
 
-        pi_apuesta_valida = False
-
-        while pi_apuesta_valida == False:
-            pi_entrada_apuesta = input("Ingresá el monto de la apuesta: $").strip()
-
-            if pi_entrada_apuesta.isdigit() == False:
-                print("  ✗ La apuesta debe ser un número entero.")
+    if pi_salir == 0:
+        pi_nombre_ultimo_jugador = pi_nombre_jugador
+        print(f"\n| Bienvenido, {pi_nombre_jugador} ♠          |")
+        while pi_juego_activo:
+            if pi_creditos[pi_indice_jugador] == 0:
+                print("\n  ✗ Te quedaste sin crédito.")
+                print("  No podés continuar jugando.")
+                pi_juego_activo = False
             else:
-                pi_apuesta = int(pi_entrada_apuesta)
+                print(f"\nCrédito disponible: ${pi_creditos[pi_indice_jugador]}")
 
-                if pi_apuesta <= 0:
-                    print("  ✗ La apuesta debe ser mayor que cero.")
-                elif pi_apuesta > pi_creditos[pi_indice_jugador]:
-                    print("  ✗ No podés apostar más de tu crédito.")
+                pi_apuesta_valida = False
+
+                while pi_apuesta_valida == False:
+                    pi_entrada_apuesta = input("Ingresá el monto de la apuesta: $").strip()
+
+                    # Validacion de digitos sin isdigit(), len() ni for():
+                    # Se verifica que el string no este vacio y se recorre cada
+                    # caracter mediante while indexado.
+                    pi_solo_digitos = 0
+                    if pi_entrada_apuesta != "":
+                        pi_solo_digitos = 1
+                        pi_indice_digito = 0
+                        while pi_indice_digito < 10 and pi_solo_digitos == 1:
+                            pi_caracter = pi_entrada_apuesta[pi_indice_digito]
+                            if pi_caracter < '0' or pi_caracter > '9':
+                                pi_solo_digitos = 0
+                            pi_indice_digito = pi_indice_digito + 1
+
+                    if pi_solo_digitos == 0:
+                        print("  ✗ La apuesta debe ser un número entero.")
+                    else:
+                        pi_apuesta = pi_convertir_a_entero(pi_entrada_apuesta)
+
+                        if pi_apuesta <= 0:
+                            print("  ✗ La apuesta debe ser mayor que cero.")
+                        elif pi_apuesta > pi_creditos[pi_indice_jugador]:
+                            print("  ✗ No podés apostar más de tu crédito.")
+                        else:
+                            pi_apuesta_valida = True
+                pi_tipo_apuesta = input("\nApuestas por: 1) Par | 2) Impar\n> ")
+                while pi_tipo_apuesta != "1" and pi_tipo_apuesta != "2":
+                    print("\n  ✗ Opción inválida. Ingresá 1 para Par o 2 para Impar.\n")
+                    pi_tipo_apuesta = input("\nApuestas por: 1) Par | 2) Impar\n> ")
+                if pi_tipo_apuesta == "1":
+                    print("\nApostaste por Par ✓\n")
                 else:
-                    pi_apuesta_valida = True
-        pi_tipo_apuesta = input("\nApuestas por: 1) Par | 2) Impar\n> ")
-        while pi_tipo_apuesta != "1" and pi_tipo_apuesta != "2":
-            print("\n  ✗ Opción inválida. Ingresá 1 para Par o 2 para Impar.\n")
-            pi_tipo_apuesta = input("\nApuestas por: 1) Par | 2) Impar\n> ")
-        if pi_tipo_apuesta == "1":
-            print("\nApostaste por Par ✓\n")
-        else:
-            print("\nApostaste por Impar ✓\n")
-        pi_dado_1 = random.randint(1,6)
-        pi_dado_2 = random.randint(1,6)
-        pi_suma_dados = pi_dado_1 + pi_dado_2
-        if pi_suma_dados % 2 == 0:
-            pi_paridad = "Par"
-        else:
-            pi_paridad = "Impar"
-        print("  ~ Tirando dados ⚀⚁⚂⚃⚄⚅ ~")
-        print("  ─────────────────")
-        if pi_paridad == "Par":
-            print(f"  Resultado: {pi_suma_dados}  →  PAR ♠")
-        else: 
-            print(f"  Resultado: {pi_suma_dados}  →  IMPAR ♠")
-        print("  ─────────────────")
-        pi_jugadas[pi_indice_jugador] = pi_jugadas[pi_indice_jugador] + 1
+                    print("\nApostaste por Impar ✓\n")
+                pi_dado_1 = random.randint(1,6)
+                pi_dado_2 = random.randint(1,6)
+                pi_suma_dados = pi_dado_1 + pi_dado_2
+                if pi_suma_dados % 2 == 0:
+                    pi_paridad = "Par"
+                else:
+                    pi_paridad = "Impar"
+                print("  ~ Tirando dados ⚀⚁⚂⚃⚄⚅ ~")
+                print("  ─────────────────")
+                if pi_paridad == "Par":
+                    print(f"  Resultado: {pi_suma_dados}  →  PAR ♠")
+                else: 
+                    print(f"  Resultado: {pi_suma_dados}  →  IMPAR ♠")
+                print("  ─────────────────")
+                pi_jugadas[pi_indice_jugador] = pi_jugadas[pi_indice_jugador] + 1
 
-        if (
-            (pi_paridad == "Par" and pi_tipo_apuesta == "1")
-            or
-            (pi_paridad == "Impar" and pi_tipo_apuesta == "2")
-        ):
-            pi_ganadas[pi_indice_jugador] = pi_ganadas[pi_indice_jugador] + 1
+                if (
+                    (pi_paridad == "Par" and pi_tipo_apuesta == "1")
+                    or
+                    (pi_paridad == "Impar" and pi_tipo_apuesta == "2")
+                ):
+                    pi_ganadas[pi_indice_jugador] = pi_ganadas[pi_indice_jugador] + 1
 
-            pi_creditos[pi_indice_jugador] = (
-                pi_creditos[pi_indice_jugador] + pi_apuesta
-            )
+                    pi_creditos[pi_indice_jugador] = (
+                        pi_creditos[pi_indice_jugador] + pi_apuesta
+                    )
 
-            print(f"\nGanaste ${pi_apuesta} ✓")
-        else:
-            pi_perdidas[pi_indice_jugador] = pi_perdidas[pi_indice_jugador] + 1
+                    print(f"\nGanaste ${pi_apuesta} ✓")
+                else:
+                    pi_perdidas[pi_indice_jugador] = pi_perdidas[pi_indice_jugador] + 1
 
-            pi_creditos[pi_indice_jugador] = (
-                pi_creditos[pi_indice_jugador] - pi_apuesta
-            )
+                    pi_creditos[pi_indice_jugador] = (
+                        pi_creditos[pi_indice_jugador] - pi_apuesta
+                    )
 
-            print(f"\nPerdiste ${pi_apuesta} ✗")
-        print("\n+--------------------------------+")
-        print(f"  Jugador: {pi_nombres[pi_indice_jugador]}")
-        print(f"  Jugadas: {pi_jugadas[pi_indice_jugador]}")
-        print(f"  Ganadas: {pi_ganadas[pi_indice_jugador]}")
-        print(f"  Perdidas: {pi_perdidas[pi_indice_jugador]}")
-        print(f"  Crédito: ${pi_creditos[pi_indice_jugador]}")
-        print("+--------------------------------+")
-        pi_opcion_usuario = (input("\nElige una opción: 1) Seguir jugando 2) Salir \n> "))
-        while pi_opcion_usuario != "1" and pi_opcion_usuario != "2":
-            print("\n✗ Opción inválida. Presiona tecla 1 para jugar o tecla 2 para salir.\n")
-            pi_opcion_usuario = (input("\nElige una opción: 1) Seguir jugando 2) Salir \n> "))
-        if pi_opcion_usuario == "2":
-            print("+----------------------------+")
-            print("|                            |")
-            print("|   ♠  G A M E  O V E R  ♠   |")
-            print("|                            |")
-            print("+----------------------------+")
-            pi_juego_activo = False
-            print("\nSaliendo al menú principal...")
-            
-    
+                    print(f"\nPerdiste ${pi_apuesta} ✗")
+                print("\n+--------------------------------+")
+                print(f"  Jugador: {pi_nombres[pi_indice_jugador]}")
+                print(f"  Jugadas: {pi_jugadas[pi_indice_jugador]}")
+                print(f"  Ganadas: {pi_ganadas[pi_indice_jugador]}")
+                print(f"  Perdidas: {pi_perdidas[pi_indice_jugador]}")
+                print(f"  Crédito: ${pi_creditos[pi_indice_jugador]}")
+                print("+--------------------------------+")
+                pi_opcion_usuario = (input("\nElige una opción: 1) Seguir jugando 2) Salir \n> "))
+                while pi_opcion_usuario != "1" and pi_opcion_usuario != "2":
+                    print("\n✗ Opción inválida. Presiona tecla 1 para jugar o tecla 2 para salir.\n")
+                    pi_opcion_usuario = (input("\nElige una opción: 1) Seguir jugando 2) Salir \n> "))
+                if pi_opcion_usuario == "2":
+                    print("+----------------------------+")
+                    print("|                            |")
+                    print("|   ♠  G A M E  O V E R  ♠   |")
+                    print("|                            |")
+                    print("+----------------------------+")
+                    pi_juego_activo = False
+                    print("\nSaliendo al menú principal...")
+
+        
 
 
 def reporte_ordenar_indices(valores, cantidad, descendente):
     """
+    ALGORITMO: Ordenamiento por seleccion.
+    Se construye un arreglo auxiliar de indices. En cada paso se busca
+    el mayor (o menor) valor entre las posiciones restantes y se coloca
+    en la siguiente posicion del arreglo de indices. Al final se devuelve
+    el arreglo de indices ordenado, sin modificar el arreglo original.
+
     VARIABLES LOCALES
         valores:list (arreglo cuyos valores determinan el orden de las posiciones)
         cantidad:int (cantidad de posiciones ocupadas que deben ordenarse)
@@ -1035,10 +1181,12 @@ def main():
     """
     VARIABLES LOCALES
         menu_opcion:str (opción ingresada dentro del menú principal)
+        salir_programa:int (indica si se debe terminar el programa)
     """
     # no se pide nombre en main; se pide en cada juego individual
     menu_opcion = ""
-    while menu_opcion != "S":
+    salir_programa = 0
+    while menu_opcion != "S" and salir_programa == 0:
         print("\n........MENU PRINCIPAL.")
         print("A - Mayor o Menor")
         print("B - Numero Secreto")
@@ -1081,7 +1229,7 @@ def main():
                 print('\n\nGracias por jugar, no apueste y juega por diversión! Hasta la próxima!')
                 input("\nPresione la tecla 'Enter' para salir...")
                 os.system('cls' if os.name == 'nt' else 'clear')
-                break
+                salir_programa = 1
                 
             
 
@@ -1107,6 +1255,4 @@ def mostrar_advertencia():
     os.system('cls' if os.name == 'nt' else 'clear')
     
     
-
 mostrar_advertencia()
-main()
