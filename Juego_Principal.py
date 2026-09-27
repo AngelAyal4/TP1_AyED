@@ -1256,3 +1256,4 @@ def mostrar_advertencia():
     
     
 mostrar_advertencia()
+main()
