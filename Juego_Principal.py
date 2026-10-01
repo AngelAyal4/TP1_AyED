@@ -1231,7 +1231,58 @@ def main():
                 os.system('cls' if os.name == 'nt' else 'clear')
                 salir_programa = 1
                 
-            
+
+def mostrar_menu():
+    os.system("cls" if os.name == "nt" else "clear")
+    print("\n........MENU PRINCIPAL.")
+    print("A - Mayor o Menor")
+    print("B - Numero Secreto")
+    print("C - BlackJack Simple")
+    print("D - Dados (Par o Impar)")
+    print("E - Reporte")
+    print("F - Fin del programa")
+
+def ejecutar_case(o):
+    if o == "A":
+        juego_mayor_menor()
+    if o == "B":
+        juego_numero_secreto()
+
+    if o == "C":
+        juego_blackjack()
+
+    if o == "D":
+        juego_par_o_impar()
+
+    if o == "E":
+        reporte()
+
+    if o == "F":
+        salir()
+
+def salir():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('\n\nGracias por jugar, no apueste y juega por diversión! Hasta la próxima!')
+    input("\nPresione la tecla 'Enter' para salir...")
+    os.system('cls' if os.name == 'nt' else 'clear')
+    salir_programa = 1
+## REVISAR procedimiento Salir!!!!!!!!!
+
+
+
+def menu():
+    mostrar_menu()
+    opcion = input("Ingrese opcion deseada: ").strip().upper()
+    while opcion not in ["A", "B", "C", "D", "E", "F"]:
+        opcion = input("Ingrese opcion deseada: ").strip().upper()
+    ejecutar_case(opcion)
+    while opcion != "F":
+        mostrar_menu()
+        opcion = input("Ingrese opcion deseada: ").strip().upper()
+        while opcion not in ["A", "B", "C", "D", "E", "F"]:
+                opcion = input("Ingrese opcion deseada: ").strip().upper()
+        ejecutar_case(opcion)
+    
 
 def mostrar_advertencia():
     """
@@ -1256,4 +1307,5 @@ def mostrar_advertencia():
     
     
 mostrar_advertencia()
-main()
+#main()
+menu()
