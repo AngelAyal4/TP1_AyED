@@ -33,6 +33,9 @@ def crearJugador(name):
     jug.nombre = nom.ljust(30, " ") 
     jug.creditos = 10000.0 
     jug.juegos = [ \* 4 for \_ in range(2)] # Matriz 2x4 inicializada en 0
+    arLoJugadores.seek(0, 2) # Se posiciona al final del archivo 
+    pickle.dump(jug, arLoJugadores) 
+    arLoJugadores.flush()
 
 
     print("Jugador creado " ,name)
