@@ -60,7 +60,7 @@ def ordenarContactosPorNombre():
                 pickle.dump(con1, arLoContacto)
                 arLoContacto.flush
 
-
+# R de CRUD
 def buscarDicoContacto(n):
     global arFiContacto
     global arLoContacto
@@ -91,7 +91,7 @@ def buscarDicoContacto(n):
     else:
         return -1
 
-
+# C de CRUD
 def crearContacto():
     con = Contacto()
     continuar = str(input("¿Seguro que vas a crear contactos (S/N)?: "))
@@ -163,7 +163,7 @@ def crearContacto():
             con = pickle.load(arLoContacto)
             print(con.codigo, "    ", con.nombreYApellido, "    ", con.telefono, "    ", con.mail)
 
-
+# R de CRUD
 def mostrarContacto():
     global arFiContacto
     global arLoContacto
@@ -179,6 +179,7 @@ def mostrarContacto():
         print("El contacto no fue encontrado")
     input()
 
+# U de CRUD
 def modificarContacto():
     global arFiContacto
     global arLoContacto
@@ -245,6 +246,7 @@ def modificarContacto():
         print("El contacto no fue encontrado")
     input()
 
+# D de CRUD
 def eliminarContacto():
     global arFiContacto
     global arLoContacto
@@ -266,6 +268,7 @@ def eliminarContacto():
         print("El contacto no fue encontrado")
     input()
 
+# R de CRUD
 def mostrarLibreta():
     global arFiContacto
     global arLoContacto
