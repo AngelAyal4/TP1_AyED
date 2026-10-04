@@ -1,3 +1,7 @@
+import random
+import os
+
+
 class Categorias:
     def __init__(self):
         self.nroCategoria = 0
@@ -15,8 +19,39 @@ class Opciones:
 class Jugadores:
     def __init__(self):
         self.nombre = "" #hasta 50 caracteres
-        self.Creditos =0
+        self.Creditos = 0
         self.juegos= [],[]
+
+def buscarJugador(name):
+    print("Jugador ya existe en la posicion 1")
+    return -1
+
+
+def crearJugador(name):
+    print("Jugador creado " ,name)
+
+
+def actualizarJugador(pos, regJugador):
+    pass
+
+def ordenarJugadoresPorCreditos():
+    pass
+
+def reportePartidasJugador(nombre):
+    pass
+
+def juegoMayorMenor():
+    nombre = input("Ingrese nombre del Jugador: ")
+    posicion = buscarJugador(nombre)
+    if posicion == -1:
+        crearJugador(nombre)
+        posicion = 1 ## Cual es la posicion de un jugador recien creado?
+
+    print("El jugador ", nombre, " esta en la posicion ", posicion)
+
+
+
+
 
 def abrirArchivos():
 #Verifico si el archivo existe, si no existe lo creo
@@ -61,7 +96,60 @@ def cerrarArchivos():
     arLoOpciones.close()
     arLoJugadores.close()
 
-def menuPrincipal():
+
+
+def mostrar_menu():
+    #os.system("cls" if os.name == "nt" else "clear")
+    print("\n........MENU PRINCIPAL.")
+    print("A - Mayor o Menor")
+    print("B - Numero Secreto")
+    print("C - BlackJack Simple")
+    print("D - Dados (Par o Impar)")
+    print("E - Reporte")
+    print("F - Fin del programa")
+
+def ejecutar_case(o):
+    if o == "A":
+        juegoMayorMenor()
+    if o == "B":
+        juego_numero_secreto()
+
+    if o == "C":
+        juego_blackjack()
+
+    if o == "D":
+        juego_par_o_impar()
+
+    if o == "E":
+        reporte()
+
+    if o == "F":
+        salir()
+
+def salir():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('\n\nGracias por jugar, no apueste y juega por diversión! Hasta la próxima!')
+    input("\nPresione la tecla 'Enter' para salir...")
+    os.system('cls' if os.name == 'nt' else 'clear')
+    salir_programa = 1
+## REVISAR procedimiento Salir!!!!!!!!!
+
+
+
+def menu():
+    mostrar_menu()
+    opcion = input("Ingrese opcion deseada: ").strip().upper()
+    while opcion not in ["A", "B", "C", "D", "E", "F"]:
+        opcion = input("Ingrese opcion deseada: ").strip().upper()
+    ejecutar_case(opcion)
+    while opcion != "F":
+        mostrar_menu()
+        opcion = input("Ingrese opcion deseada: ").strip().upper()
+        while opcion not in ["A", "B", "C", "D", "E", "F"]:
+                opcion = input("Ingrese opcion deseada: ").strip().upper()
+        ejecutar_case(opcion)
+    
+
     
 def mostrar_advertencia():
     """
@@ -94,5 +182,5 @@ global arLoJugadores
 
 mostrar_advertencia()
 abrirArchivos()
-menuPrincipal()
+menu()
 cerrarArchivos()
