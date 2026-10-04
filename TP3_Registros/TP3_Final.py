@@ -22,13 +22,29 @@ class Opcion:
 class Jugador:
     def __init__(self):
         self.nombre = ""  # hasta 30 caracteres
-        self.Creditos = 0
+        self.Creditos = 0.0
         self.juegos = [[0] * 4 for _ in range(2)] #Revisar si esta bien asi o la catedra lo pide distinto
 
 
 def buscarJugador(name):
-    print("Jugador ya existe en la posicion 1")
-    return -1
+    global arFiJugadores
+    global arLoJugadores
+    # jug = Jugador()
+    tam = os.path.getsize(arFiJugadores)
+    pos = 0
+    resultado = -1
+    arLoJugadores.seek(0, 0)
+
+    if tam > 0:
+        jug = pickle.load(arLoJugadores)
+        while arLoJugadores.tell()<tam and jug.nombre.rstrip()!= name:
+            pos = arLoJugadores.tell()
+            jug = pickle.load(arLoJugadores)
+        if jug.nombre.rstrip() == name:
+            resultado = pos
+
+    return resultado
+
 
 
 def crearJugador(name):
@@ -55,21 +71,28 @@ def ordenarJugadoresPorCreditos():
 def reportePartidasJugador(name):
     pass
 
+def validarNombre(name):
+    while len(name) > 30 or name.strip() == "":
+        print("El nombre no puede superar los 30 caracteres.")
+        name = input("Ingrese nombre (máximo 30 caracteres): ")
+    return name
 
 def juegoMayorMenor():
     nombre = input("Ingrese nombre del Jugador: ")
+    nombre = validarNombre(nombre)
     posicion = buscarJugador(nombre)
     if posicion == -1:
         crearJugador(nombre)
-        posicion = 1  ## Cual es la posicion de un jugador recien creado?
+        posicion = buscarJugador(nombre)
+    
 
     print("El jugador ", nombre, " esta en la posicion ", posicion)
 
 
 def abrirArchivos():
-    abrirArchivoCategoria
-    abrirArchivoJugadores
-    abrirArchivoOpciones
+    abrirArchivoCategoria()
+    abrirArchivoJugadores()
+    abrirArchivoOpciones()
 
 
 # Verifico si el archivo existe, si no existe lo creo
@@ -84,7 +107,7 @@ def abrirArchivoCategoria():
     else:
         print(f"El archivo {arFiCategorias} No existía y fue creado")
         arLoCategorias = open(arFiCategorias, "w+b")
-    input()
+    #input()
 
 
 def abrirArchivoOpciones():
@@ -96,7 +119,7 @@ def abrirArchivoOpciones():
     else:
         print(f"El archivo {arFiOpciones} No existía y fue creado")
         arLoOpciones = open(arFiOpciones, "w+b")
-    input()
+    #input()
 
 
 def abrirArchivoJugadores():
@@ -108,7 +131,7 @@ def abrirArchivoJugadores():
     else:
         print(f"El archivo {arFiJugadores} No existía y fue creado")
         arLoJugadores = open(arFiJugadores, "w+b")
-    input()
+        #input()
 
 
 def cerrarArchivos():
