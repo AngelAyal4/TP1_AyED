@@ -2,24 +2,24 @@ import random
 import os
 
 
-class Categorias:
+class Categoria:
     def __init__(self):
         self.nroCategoria = 0
         self.nombreCategoria ="" #hasta 30 caracteres
         self.pregunta ="" #hasta 200 caracteres
         self.estado =""#A-I Activo, I Inactivo
 
-class Opciones:
+class Opcion:
     def __init__(self):
         self.nroCategoria = 0
         self.nroOpcion =0
         self.objeto =""
         self.mail =""
 
-class Jugadores:
+class Jugador:
     def __init__(self):
         self.nombre = "" #hasta 50 caracteres
-        self.Creditos = 0
+        self.Creditos = 10000,0
         self.juegos= [],[]
 
 def buscarJugador(name):
@@ -28,6 +28,13 @@ def buscarJugador(name):
 
 
 def crearJugador(name):
+    global arFiJugadores, arLoJugadores
+    jug = Jugador()
+    jug.nombre = nom.ljust(30, " ") 
+    jug.creditos = 10000.0 
+    jug.juegos = [ \* 4 for \_ in range(2)] # Matriz 2x4 inicializada en 0
+
+
     print("Jugador creado " ,name)
 
 
