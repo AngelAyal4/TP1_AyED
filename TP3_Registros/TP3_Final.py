@@ -178,7 +178,6 @@ def salir():
     print("\n\nGracias por jugar, no apueste y juega por diversión! Hasta la próxima!")
     input("\nPresione la tecla 'Enter' para salir...")
     os.system("cls" if os.name == "nt" else "clear")
-    salir_programa = 1
 
 
 ## REVISAR procedimiento Salir!!!!!!!!!
