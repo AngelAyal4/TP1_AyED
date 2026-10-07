@@ -1,7 +1,6 @@
 import os.path
 import pickle
 import os
-import os.path
 
 class Contacto:
     def __init__(self):
@@ -15,7 +14,7 @@ class Contacto:
 def abrirArchivo():
     global arFiContacto
     global arLoContacto
-    arFiContacto = "contacto.dat"
+    arFiContacto = os.path.join(os.path.dirname(__file__), "contacto.dat")
     if os.path.exists(arFiContacto):
         arLoContacto = open(arFiContacto, "r+b")
     else:
