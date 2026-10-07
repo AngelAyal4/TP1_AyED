@@ -1,4 +1,4 @@
-from copyreg import pickle
+import pickle
 import os
 
 #se declara la estructura de datos que vamos a utilizar
@@ -78,7 +78,7 @@ def crearContacto():
         tel = str(input("Ingresar número de teléfono (Max. 15 caracteres): "))
         while len(tel) > 15:
             print("Solo 15 caracteres")
-            nomYApe = str(input("Ingresar número de teléfono (Max. 15 caracteres): "))
+            tel = str(input("Ingresar número de teléfono (Max. 15 caracteres): "))
         if len(tel) < 15:
             con.telefono = tel.ljust(15, " ")
         elif len(tel) == 15:
@@ -255,7 +255,7 @@ def cerrarArchivos():
     arLoContacto.close()
 
 def mostrarMenu():
-    os.system("cls")
+    os.system("clear" if os.name == "posix" else "cls")
     print("1. Agregar contacto")
     print("2. Listar contactos")
     print("3. Buscar contacto")
@@ -280,9 +280,9 @@ def ejecutarCase(o):
     if o == 1:
         crearContacto()
     elif o == 2:
-        mostrarContacto()
+        mostrarLibreta()
     elif o == 3:
-        buscarDicoContacto()
+        mostrarContacto()
     elif o == 4:
         modificarContacto()
     elif o == 5:
@@ -298,14 +298,14 @@ def ejecutarCase(o):
 def menu():
     mostrarMenu()
     opcion = input("Ingrese una opción: ")
-    while not validarIngresoEntero(opcion, 0, 5):
+    while not validarIngresoEntero(opcion, 0, 6):
         opcion = input("Ingrese la opción deseada: ")
     opcion = int(opcion)
     ejecutarCase(opcion)
     while opcion != 0:
         mostrarMenu()
         opcion = input("Ingrese una opción: ")
-        while not validarIngresoEntero(opcion, 0, 5):
+        while not validarIngresoEntero(opcion, 0, 6):
             opcion = input("Ingrese la opción deseada: ")
         opcion = int(opcion)
         ejecutarCase(opcion)
