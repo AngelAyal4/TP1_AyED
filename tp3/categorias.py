@@ -90,4 +90,56 @@ def principal():
         print("Créela manualmente y vuelva a ejecutar el programa.")
 
 
-principal()
+def salir():
+    print("Bye Bye")
+    input()
+
+def cerrarArchivos():
+    arLoContacto.close()
+
+def ejecutarCase(o):
+    if o == 1:
+        crearContacto()
+    if o == 2:
+        mostrarContacto()
+    if o == 3:
+        modificarContacto()
+    if o == 4:
+        eliminarContacto()
+    if o == 5:
+        mostrarLibreta()
+    if o == 0:
+        salir()
+
+
+def mostrarMenu():
+    os.system("cls")
+    print("1- Alta")
+    print("2 – Mostrar un contacto")
+    print("3 – Modificar datos un contacto")
+    print("4 – Eliminar contacto (Baja lógica")
+    print("5 - Mostrar toda la libreta de contactos")
+    print("0 – Fin del programa")
+
+
+def menu():
+    mostrarMenu()
+    opcion = input("Ingresar opción deseada: ")
+    while not validarIngresoEntero(opcion, 0, 5):
+        opcion = input("Ingresar opción deseada: ")
+    opcion = int(opcion)
+    ejecutarCase(opcion)
+    while opcion != 0:
+        mostrarMenu()
+        opcion = input("Ingresar opción deseada: ")
+        while not validarIngresoEntero(opcion, 0, 5):
+            opcion = input("Ingresar opción deseada: ")
+        opcion = int(opcion)
+        ejecutarCase(opcion)
+
+global arFiCategoria
+global arLoCategoria
+
+abrirArchivo()
+menu()
+cerrarArchivos()
