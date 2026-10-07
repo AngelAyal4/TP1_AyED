@@ -3,6 +3,10 @@ import os
 import pickle
 import os.path
 
+
+# ---------------------------------------------------------------
+# REGISTROS
+# ---------------------------------------------------------------
 class Categoria:
     def __init__(self):
         self.nroCategoria = 0
@@ -25,6 +29,15 @@ class Jugador:
         self.Creditos = 0.0
         self.juegos = [[0] * 4 for _ in range(2)] #Revisar si esta bien asi o la catedra lo pide distinto
 
+# ---------------------------------------------------------------
+# ORDENAMIENTO Y BUSQUEDA
+# ---------------------------------------------------------------
+
+
+
+# ---------------------------------------------------------------
+# CRUD JUGADORES
+# ---------------------------------------------------------------
 
 def buscarJugador(name):
     global arFiJugadores
@@ -77,6 +90,18 @@ def validarNombre(name):
         name = input("Ingrese nombre (máximo 30 caracteres): ")
     return name
 
+# ---------------------------------------------------------------
+# CRUD CATEGORIAS
+# ---------------------------------------------------------------
+
+# ---------------------------------------------------------------
+# CRUD OPCIONES
+# ---------------------------------------------------------------
+
+# ---------------------------------------------------------------
+# JUEGOS
+# ---------------------------------------------------------------
+
 def juegoMayorMenor():
     nombre = input("Ingrese nombre del Jugador: ")
     nombre = validarNombre(nombre)
@@ -89,14 +114,16 @@ def juegoMayorMenor():
     print("El jugador ", nombre, " esta en la posicion ", posicion)
 
 
+# ---------------------------------------------------------------
+# ABRIR Y CERRAR ARCHIVOS
+# ---------------------------------------------------------------
+
 def abrirArchivos():
     abrirArchivoCategoria()
     abrirArchivoJugadores()
     abrirArchivoOpciones()
 
-
 # Verifico si el archivo existe, si no existe lo creo
-
 
 def abrirArchivoCategoria():
     global arFiCategorias
@@ -142,6 +169,9 @@ def cerrarArchivos():
     arLoOpciones.close()
     arLoJugadores.close()
 
+# ---------------------------------------------------------------
+# MENU'S
+# ---------------------------------------------------------------
 
 def mostrar_menu():
     # os.system("cls" if os.name == "nt" else "clear")
@@ -179,9 +209,7 @@ def salir():
     input("\nPresione la tecla 'Enter' para salir...")
     os.system("cls" if os.name == "nt" else "clear")
 
-
 ## REVISAR procedimiento Salir!!!!!!!!!
-
 
 def menu():
     mostrar_menu()
@@ -195,7 +223,6 @@ def menu():
         while opcion not in ["A", "B", "C", "D", "E", "F"]:
             opcion = input("Ingrese opcion deseada: ").strip().upper()
         ejecutar_case(opcion)
-
 
 def mostrar_advertencia():
     """
@@ -218,6 +245,9 @@ def mostrar_advertencia():
     input("\nPresione la tecla 'Enter' para continuar...")
     os.system("cls" if os.name == "nt" else "clear")
 
+# ---------------------------------------------------------------
+# PROGRAMA PRINCIPAL
+# ---------------------------------------------------------------
 
 # Declaracion de variables globales
 global arFiCategorias
