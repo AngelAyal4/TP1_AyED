@@ -222,6 +222,7 @@ def pedirCategoriaActiva(mensaje):
 # ---------------------------------------------------------------
 # ACCESO A OPCIONES
 # ---------------------------------------------------------------
+# Cuenta cuantas opciones pertenecen a la categoria 'nroCategoria' (barrido secuencial).
 def contarOpcionesDe(nroCategoria):
     cant = 0
     tam = os.path.getsize(RUTA_OPCIONES)
@@ -233,6 +234,7 @@ def contarOpcionesDe(nroCategoria):
     return cant
 
 
+# Agrega una opcion al final con NroOpcion = (cantidad de esa categoria + 1); devuelve ese NroOpcion.
 def grabarOpcion(nroCategoria, objeto, valor):
     reg = Opcion()
     reg.NroCategoria = nroCategoria
@@ -245,6 +247,7 @@ def grabarOpcion(nroCategoria, objeto, valor):
     return reg.NroOpcion
 
 
+# Agrega una categoria nueva al final (la usa la carga inicial de datos).
 def grabarCategoria(nro, nombre, pregunta):
     reg = Categoria()
     reg.NroCategoria = nro
@@ -259,6 +262,7 @@ def grabarCategoria(nro, nombre, pregunta):
 # ---------------------------------------------------------------
 # ALTA DE OPCION
 # ---------------------------------------------------------------
+# Pide categoria activa, objeto y valor; graba una opcion nueva (Alta).
 def altaOpcion():
     if cantidadCategoriasActivas() == 0:
         print("Antes de registrar opciones debe dar de alta categorías activas")
@@ -280,6 +284,7 @@ def altaOpcion():
 # ---------------------------------------------------------------
 # CONSULTA DE OPCIONES
 # ---------------------------------------------------------------
+# Muestra la pregunta y todas las opciones con su valor de una categoria (Consulta).
 def consultaOpciones():
     if cantidadCategoriasActivas() == 0:
         print("No hay categorías activas")
@@ -306,6 +311,7 @@ def consultaOpciones():
 # ---------------------------------------------------------------
 # CARGA INICIAL (mínimo para la entrega, sin listas)
 # ---------------------------------------------------------------
+# Carga 3 categorias de ejemplo (solo si categorias.dat esta vacio).
 def cargarCategoriasIniciales():
     grabarCategoria(1, "Edad Famosos", "¿Quién tiene más años?")
     grabarCategoria(2, "Dinero Famosos", "¿Qué famoso es más rico?")
@@ -313,6 +319,7 @@ def cargarCategoriasIniciales():
     print("Se cargaron 3 categorías iniciales")
 
 
+# Carga 9 opciones de ejemplo (3 por categoria; solo si opciones.dat esta vacio).
 def cargarOpcionesIniciales():
     grabarOpcion(1, "Tom Cruise", 62)
     grabarOpcion(1, "Lionel Messi", 37)
@@ -329,6 +336,7 @@ def cargarOpcionesIniciales():
 # ---------------------------------------------------------------
 # MENÚ
 # ---------------------------------------------------------------
+# Limpia la pantalla y muestra las opciones del menu.
 def mostrarMenu():
     os.system("cls" if os.name == "nt" else "clear")
     print("1 - Alta de opción")
@@ -337,6 +345,7 @@ def mostrarMenu():
     print("0 - Fin del programa")
 
 
+# Despacha la opcion elegida a la funcion correspondiente.
 def ejecutarCase(o):
     if o == 1:
         altaOpcion()
@@ -346,6 +355,7 @@ def ejecutarCase(o):
         print("Volviendo...")
 
 
+# Bucle principal del menu hasta que el usuario elige salir.
 def menu():
     termino = False
     while not termino:

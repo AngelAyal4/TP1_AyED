@@ -172,6 +172,9 @@ def cerrarArchivos():
 # ---------------------------------------------------------------
 # MENU'S
 # ---------------------------------------------------------------
+# ---------------------------------------------------------------
+# MENU PRINCIPAL
+# ---------------------------------------------------------------
 
 def mostrar_menu():
     # os.system("cls" if os.name == "nt" else "clear")
@@ -202,14 +205,11 @@ def ejecutar_case(o):
     if o == "F":
         salir()
 
-
 def salir():
     os.system("cls" if os.name == "nt" else "clear")
     print("\n\nGracias por jugar, no apueste y juega por diversión! Hasta la próxima!")
     input("\nPresione la tecla 'Enter' para salir...")
     os.system("cls" if os.name == "nt" else "clear")
-
-## REVISAR procedimiento Salir!!!!!!!!!
 
 def menu():
     mostrar_menu()
@@ -224,6 +224,43 @@ def menu():
             opcion = input("Ingrese opcion deseada: ").strip().upper()
         ejecutar_case(opcion)
 
+# ---------------------------------------------------------------
+# MENU REPORTES
+# ---------------------------------------------------------------
+
+def mostrar_reporte():
+    # os.system("cls" if os.name == "nt" else "clear")
+    print("\n........REPORTE DE JUGADORES.")
+    print("A - Rankings de jugadores por créditos")
+    print("B - Informe de partidas jugadas por un jugador")
+    print("C - Volver al menú principal")
+
+
+def ejecutar_case_reportes(o):
+    if o == "A":
+        RankingDeJugadoresPorCreditos()
+
+    if o == "B":
+        InformeDePartidasJugadasPorUnJugador()
+
+
+def reporte():
+    opcion = ""
+    while opcion != "C":
+        mostrar_reporte()
+        opcion = input("Ingrese opcion deseada: ").strip().upper()
+        while opcion not in ["A", "B", "C"]:
+            opcion = input("Ingrese opcion deseada: ").strip().upper()
+        if opcion != "C":
+            ejecutar_case_reportes(opcion)
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+# ---------------------------------------------------------------
+# MENU ADMINISTRACION
+# ---------------------------------------------------------------
+
+#Advertencia inicial
 def mostrar_advertencia():
     """
     VARIABLES LOCALES
