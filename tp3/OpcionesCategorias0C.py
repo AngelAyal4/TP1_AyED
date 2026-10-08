@@ -73,7 +73,7 @@ def archivoVacio(ruta):
 # ---------------------------------------------------------------
 def sinAcentos(texto):
     # Normaliza a ASCII (ver categoriasOC.py): evita que los acentos
-    # cambien el tamanio serializado del registro.
+    # cambien el tamaño serializado del registro.
     resultado = ""
     i = 0
     while i < len(texto):
@@ -131,15 +131,27 @@ def validarEntero(x):
     return valor
 
 
+# Devuelve True si el texto esta formado solo por digitos (sin signos ni espacios).
+def esNumero(texto):
+    resultado = len(texto) > 0
+    i = 0
+    while i < len(texto) and resultado:
+        if texto[i] < "0" or texto[i] > "9":
+            resultado = False
+        i = i + 1
+    return resultado
+
+
 # ---------------------------------------------------------------
 # ACCESO A CATEGORIAS (para relacionar Opciones -> Categoria)
 # ---------------------------------------------------------------
+# Devuelve el tamaño en bytes de un registro de categoria (para acceso directo).
 def tamanioRegistroCategoria():
     arLoCategorias.seek(0, 0)
     pickle.load(arLoCategorias)
     return arLoCategorias.tell()
 
-
+# Devuelve la cantidad total de categorias del archivo.
 def cantidadCategorias():
     tam = os.path.getsize(RUTA_CATEGORIAS)
     cant = 0
@@ -148,12 +160,14 @@ def cantidadCategorias():
     return cant
 
 
+# Lee y devuelve la categoria numero 'nro' (acceso directo: pos = (nro-1)*tamReg).
 def leerCategoria(nro):
     pos = (nro - 1) * tamanioRegistroCategoria()
     arLoCategorias.seek(pos, 0)
     return pickle.load(arLoCategorias)
 
 
+# Devuelve True si la categoria 'nro' existe y esta Activa ("A").
 def categoriaActiva(nro):
     activa = False
     if nro >= 1 and nro <= cantidadCategorias():
@@ -163,6 +177,7 @@ def categoriaActiva(nro):
     return activa
 
 
+# Cuenta cuantas categorias estan Activas ("A").
 def cantidadCategoriasActivas():
     cant = 0
     tam = os.path.getsize(RUTA_CATEGORIAS)
@@ -174,6 +189,7 @@ def cantidadCategoriasActivas():
     return cant
 
 
+# Muestra numero, nombre y pregunta de todas las categorias Activas.
 def listarCategoriasActivas():
     print("NRO | NOMBRE                         | PREGUNTA")
     print("-" * 80)
@@ -186,12 +202,15 @@ def listarCategoriasActivas():
                   reg.Pregunta.rstrip())
 
 
+# Pide por teclado un numero de categoria valido y Activo; devuelve ese numero.
 def pedirCategoriaActiva(mensaje):
     nro = 0
     ingresar = True
     while ingresar:
-        entrada = input(mensaje)
-        if validarIngresoEntero(entrada, 1, cantidadCategorias()):
+        entrada = input(mensaje).strip()
+        if not esNumero(entrada):
+            print("Solo se permiten numeros")
+        elif validarIngresoEntero(entrada, 1, cantidadCategorias()):
             nro = int(entrada)
             if categoriaActiva(nro):
                 ingresar = False
