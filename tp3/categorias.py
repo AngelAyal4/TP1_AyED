@@ -17,8 +17,8 @@ LARGO_PREGUNTA = 200
 class Categoria:
     def __init__(self):
         self.NroCategoria = 0                       # int (consecutivo desde 1)
-        self.NombreCategoria = " " * LARGO_NOMBRE   # str(30)
-        self.Pregunta = " " * LARGO_PREGUNTA        # str(200)
+        self.NombreCategoria = " "                  # str(30)
+        self.Pregunta = " "                         # str(200)
         self.Estado = "A"                           # str: A = Activa / I = Inactiva
 
 
@@ -99,15 +99,15 @@ def cerrarArchivos():
 
 def ejecutarCase(o):
     if o == 1:
-        crearContacto()
+        alta_categoria()
     if o == 2:
-        mostrarContacto()
+        mostrar_categoria()
     if o == 3:
-        modificarContacto()
+        modificar_categoria()
     if o == 4:
-        eliminarContacto()
+        eliminar_categoria()
     if o == 5:
-        mostrarLibreta()
+        listar_categorias()
     if o == 0:
         salir()
 
@@ -115,10 +115,10 @@ def ejecutarCase(o):
 def mostrarMenu():
     os.system("cls")
     print("1- Alta")
-    print("2 – Mostrar un contacto")
-    print("3 – Modificar datos un contacto")
-    print("4 – Eliminar contacto (Baja lógica")
-    print("5 - Mostrar toda la libreta de contactos")
+    print("2 – Mostrar una categoría")
+    print("3 – Modificar datos de una categoría")
+    print("4 – Eliminar categoría (Baja lógica)")
+    print("5 - Mostrar todas las categorías")
     print("0 – Fin del programa")
 
 
