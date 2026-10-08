@@ -4,6 +4,7 @@ import pickle
 import os.path
 
 
+
 # ---------------------------------------------------------------
 # REGISTROS
 # ---------------------------------------------------------------
@@ -177,14 +178,15 @@ def cerrarArchivos():
 # ---------------------------------------------------------------
 
 def mostrar_menu():
-    # os.system("cls" if os.name == "nt" else "clear")
+    os.system("cls" if os.name == "nt" else "clear")
     print("\n........MENU PRINCIPAL.")
     print("A - Mayor o Menor")
     print("B - Numero Secreto")
     print("C - BlackJack Simple")
     print("D - Dados (Par o Impar)")
     print("E - Reporte")
-    print("F - Fin del programa")
+    print("F - Administración")
+    print("G - Fin del programa")
 
 
 def ejecutar_case(o):
@@ -203,6 +205,9 @@ def ejecutar_case(o):
         reporte()
 
     if o == "F":
+        administracion()
+
+    if o == "G":
         salir()
 
 def salir():
@@ -214,13 +219,13 @@ def salir():
 def menu():
     mostrar_menu()
     opcion = input("Ingrese opcion deseada: ").strip().upper()
-    while opcion not in ["A", "B", "C", "D", "E", "F"]:
+    while opcion not in ["A", "B", "C", "D", "E", "F", "G"]:
         opcion = input("Ingrese opcion deseada: ").strip().upper()
     ejecutar_case(opcion)
-    while opcion != "F":
+    while opcion != "G":
         mostrar_menu()
         opcion = input("Ingrese opcion deseada: ").strip().upper()
-        while opcion not in ["A", "B", "C", "D", "E", "F"]:
+        while opcion not in ["A", "B", "C", "D", "E", "F", "G"]:
             opcion = input("Ingrese opcion deseada: ").strip().upper()
         ejecutar_case(opcion)
 
@@ -229,7 +234,7 @@ def menu():
 # ---------------------------------------------------------------
 
 def mostrar_reporte():
-    # os.system("cls" if os.name == "nt" else "clear")
+    os.system("cls" if os.name == "nt" else "clear")
     print("\n........REPORTE DE JUGADORES.")
     print("A - Rankings de jugadores por créditos")
     print("B - Informe de partidas jugadas por un jugador")
@@ -259,6 +264,104 @@ def reporte():
 # ---------------------------------------------------------------
 # MENU ADMINISTRACION
 # ---------------------------------------------------------------
+
+def mostrar_administracion():
+    os.system("cls" if os.name == "nt" else "clear")
+    print("\n........ADMINISTRACIÓN.")
+    print("A - Administrar Categorías")
+    print("B - Administrar Opciones")
+    print("C - Volver al menú principal")
+
+
+def ejecutar_case_administracion(o):
+    if o == "A":
+        administracion_categoria()
+
+    if o == "B":
+        administracion_opciones()
+
+
+
+def administracion():
+    opcion = ""
+    while opcion != "C":
+        mostrar_administracion()
+        opcion = input("Ingrese opcion deseada: ").strip().upper()
+        while opcion not in ["A", "B", "C"]:
+            opcion = input("Ingrese opcion deseada: ").strip().upper()
+        if opcion != "C":
+            ejecutar_case_administracion(opcion)
+    os.system("cls" if os.name == "nt" else "clear")
+
+# ---------------------------------------------------------------
+# MENU ADMINISTRACION CATEGORIAS
+# ---------------------------------------------------------------
+
+def _mostrar_administracion_categorias():
+    os.system("cls" if os.name == "nt" else "clear")
+    print("\n........ADMINISTRACIÓN DE CATEGORIAS.")
+    print("A - Alta Categoría")
+    print("B - Modificar Categoría")
+    print("C - Baja Categoría")
+    print("D - Volver al menú anterior")
+
+
+def ejecutar_case_administracion_categorias(o):
+    if o == "A":
+        altaCategoria()
+
+    if o == "B":
+        modificarCategoria()
+
+    if o == "C":
+        bajaCategoria()
+
+    if o == "D":
+        administracion()
+
+def administracion_categoria():
+    opcion = ""
+    while opcion != "D":
+        _mostrar_administracion_categorias()
+        opcion = input("Ingrese opcion deseada: ").strip().upper()
+        while opcion not in ["A", "B", "C", "D"]:
+            opcion = input("Ingrese opcion deseada: ").strip().upper()
+        if opcion != "D":
+            ejecutar_case_administracion_categorias(opcion)
+    os.system("cls" if os.name == "nt" else "clear")
+
+# ---------------------------------------------------------------
+# MENU ADMINISTRACION OPCIONES
+# ---------------------------------------------------------------
+
+def mostrar_administracion_opciones():
+    os.system("cls" if os.name == "nt" else "clear")
+    print("\n........ADMINISTRACIÓN.")
+    print("A - Alta Opción")
+    print("B - Modificar Opción")
+    print("C - Volver al menú anterior")
+
+
+def ejecutar_case_administracion_opciones(o):
+    if o == "A":
+        altaOpcion()
+
+    if o == "B":
+        consultaOpciones()
+
+    if o == "C":
+        administracion()
+
+def administracion_opciones():
+    opcion = ""
+    while opcion != "C":
+        mostrar_administracion_opciones()
+        opcion = input("Ingrese opcion deseada: ").strip().upper()
+        while opcion not in ["A", "B", "C"]:
+            opcion = input("Ingrese opcion deseada: ").strip().upper()
+        if opcion != "C":
+            ejecutar_case_administracion_opciones(opcion)
+    os.system("cls" if os.name == "nt" else "clear")
 
 #Advertencia inicial
 def mostrar_advertencia():
