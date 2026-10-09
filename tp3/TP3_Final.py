@@ -23,6 +23,8 @@ LARGO_NOMBRE = 30
 LARGO_PREGUNTA = 200
 LARGO_OBJETO = 100
 
+MIN_OPCIONES_PARTIDA = 7        # opciones distintas que necesita una partida (2 + 5 nuevas)
+
 CONTRASENA_ADMIN = "admin"      # constante del programa principal (enunciado §F)
 
 
@@ -548,6 +550,22 @@ def contarOpcionesDe(nroCategoria):
     return cant
 
 
+def leerOpcionKDe(nroCategoria, k):
+    # Devuelve la k-esima opcion (1..N) de la categoria (barrido secuencial).
+    global arLoOpciones
+    encontrada = Opcion()
+    tam = os.path.getsize(RUTA_OPCIONES)
+    visto = 0
+    arLoOpciones.seek(0, 0)
+    while arLoOpciones.tell() < tam:
+        reg = pickle.load(arLoOpciones)
+        if reg.NroCategoria == nroCategoria:
+            visto = visto + 1
+            if visto == k:
+                encontrada = reg
+    return encontrada
+
+
 def grabarOpcion(nroCategoria, objeto, valor):
     # Agrega una opcion al final con NroOpcion = (cantidad de esa categoria + 1).
     global arLoOpciones
@@ -708,15 +726,189 @@ def menuAdminOpciones():
 # ---------------------------------------------------------------
 # JUEGOS
 # ---------------------------------------------------------------
+
+# ---------------------------------------------------------------
+# JUEGO 1: MAYOR O MENOR
+# ---------------------------------------------------------------
+
+def yaUsado(usados, cantUsados, nroOpcion):
+    # Devuelve True si 'nroOpcion' ya esta en el arreglo de opciones usadas.
+    usado = False
+    i = 0
+    while i < cantUsados:
+        if usados[i] == nroOpcion:
+            usado = True
+        i = i + 1
+    return usado
+
+
+def sortearOpcionNoUsada(nroCategoria, usados, cantUsados, valorEvitar):
+    # Sortea una opcion de la categoria que no se haya usado ni empate con 'valorEvitar'.
+    # ponytail: si la categoria tuviera muchos valores repetidos podria quedar en loop;
+    # el dato actual tiene valores distintos por categoria.
+    cant = contarOpcionesDe(nroCategoria)
+    opcion = Opcion()
+    repetida = True
+    while repetida:
+        k = random.randint(1, cant)
+        opcion = leerOpcionKDe(nroCategoria, k)
+        repetida = yaUsado(usados, cantUsados, opcion.NroOpcion) or opcion.valor == valorEvitar
+    return opcion
+
+
 def juegoMayorMenor():
-    # Juego del menor-mayor (por ahora solo registra/busca al jugador).
-    nombre = input("Ingrese nombre del Jugador: ")
-    nombre = validarNombre(nombre)
-    posicion = buscarJugador(nombre)
-    if posicion == -1:
-        crearJugador(nombre)
-        posicion = buscarJugador(nombre)
-    print("El jugador ", nombre, " esta en la posicion ", posicion)
+    # Juego del menor-mayor: apuesta, 6 rondas de aciertos y actualiza al jugador (opcion A).
+    """
+    VARIABLES LOCALES
+        mm_nombre:str (nombre ingresado por el jugador)
+        mm_pos:int (posicion del jugador en jugadores.dat)
+        mm_reg:Jugador (registro del jugador: creditos y matriz de juegos)
+        mm_puede_jugar:bool (False si no tiene creditos para apostar)
+        mm_apuesta:int (creditos apostados en la partida)
+        mm_apuesta_valida:bool (control del ciclo de apuesta)
+        mm_entrada:str (apuesta ingresada por teclado)
+        mm_nro:int (numero de la categoria elegida)
+        mm_cat:Categoria (categoria elegida, para mostrar su pregunta)
+        mm_usados:[int]*8 (arreglo fijo con los NroOpcion ya sorteados)
+        mm_cant_usados:int (cuantos NroOpcion hay en mm_usados)
+        mm_op_uno:Opcion (opcion que se muestra como 1)
+        mm_op_dos:Opcion (opcion que se muestra como 2)
+        mm_op_correcta:Opcion (opcion de mayor valor, pasa de ronda)
+        mm_opcion:str (1 o 2, eleccion de la ronda)
+        mm_eligio_correcta:bool (True si eligio la opcion de mayor valor)
+        mm_puntos:int (aciertos acumulados)
+        mm_ronda:int (ronda actual, 1..6)
+        mm_gano:bool (True si acerto 4 o mas)
+    """
+    global arLoCategorias
+    global arLoOpciones
+    global arLoJugadores
+
+    print("\n================================================\n")
+    print("    ♠  BIENVENIDOS AL JUEGO DEL MENOR-MAYOR  ♠")
+    print("\n================================================\n")
+
+    mm_nombre = input("Escribí tu nombre: ")
+    mm_nombre = validarNombre(mm_nombre)
+    mm_pos = buscarJugador(mm_nombre)
+    if mm_pos == -1:
+        crearJugador(mm_nombre)
+        mm_pos = buscarJugador(mm_nombre)
+    mm_reg = leerJugadorEnPosicion(mm_pos)
+
+    mm_puede_jugar = True
+    mm_apuesta = 0
+    if mm_reg.Creditos < 1:
+        print(f"\n  ✗ {mm_nombre}, no tenés créditos para apostar.")
+        input("  Presione la tecla 'Enter' para continuar...")
+        mm_puede_jugar = False
+    else:
+        print(f"\n  Créditos disponibles: ${int(mm_reg.Creditos)}")
+        mm_apuesta_valida = False
+        while not mm_apuesta_valida:
+            mm_entrada = input("  Ingresá el monto de la apuesta: $").strip()
+            if not esNumero(mm_entrada):
+                print("  ✗ La apuesta debe ser un número entero.")
+            elif validarIngresoEntero(mm_entrada, 1, int(mm_reg.Creditos)):
+                mm_apuesta = int(mm_entrada)
+                mm_apuesta_valida = True
+
+    if mm_puede_jugar:
+        listarCategorias(True)
+        mm_nro = pedirCategoriaActiva("Ingresar el número de categoría: ")
+        while contarOpcionesDe(mm_nro) < MIN_OPCIONES_PARTIDA:
+            print(f"  ✗ Esa categoría no tiene opciones suficientes (mínimo {MIN_OPCIONES_PARTIDA}).")
+            mm_nro = pedirCategoriaActiva("Ingresar el número de categoría: ")
+        mm_cat = leerCategoria(mm_nro)
+        print("\n  Pregunta:", mm_cat.Pregunta.rstrip())
+
+        mm_usados = [0] * 8
+        mm_cant_usados = 0
+        mm_op_uno = sortearOpcionNoUsada(mm_nro, mm_usados, mm_cant_usados, None)
+        mm_usados[mm_cant_usados] = mm_op_uno.NroOpcion
+        mm_cant_usados = mm_cant_usados + 1
+        mm_op_dos = sortearOpcionNoUsada(mm_nro, mm_usados, mm_cant_usados, mm_op_uno.valor)
+        mm_usados[mm_cant_usados] = mm_op_dos.NroOpcion
+        mm_cant_usados = mm_cant_usados + 1
+
+        mm_puntos = 0
+        mm_ronda = 1
+        while mm_ronda <= 6:
+            # Orden de presentacion aleatorio (si no, la opcion correcta quedaria siempre primera)
+            if random.randint(0, 1) == 0:
+                mm_op_uno, mm_op_dos = mm_op_dos, mm_op_uno
+            print("\n----------------------------------------")
+            print(f"  Ronda {mm_ronda} de 6   |   Puntos: {mm_puntos}")
+            print("----------------------------------------")
+            print(f"  1. {mm_op_uno.objeto.rstrip()}")
+            print(f"  2. {mm_op_dos.objeto.rstrip()}")
+            mm_opcion = input("  ¿Cuál tiene mayor valor? (1/2): ").strip()
+            while mm_opcion != "1" and mm_opcion != "2":
+                print("  ✗ Ingresá 1 o 2.")
+                mm_opcion = input("  ¿Cuál tiene mayor valor? (1/2): ").strip()
+
+            if mm_op_uno.valor > mm_op_dos.valor:
+                mm_op_correcta = mm_op_uno
+                mm_eligio_correcta = mm_opcion == "1"
+            else:
+                mm_op_correcta = mm_op_dos
+                mm_eligio_correcta = mm_opcion == "2"
+
+            print(f"\n  {mm_op_uno.objeto.rstrip()} {mm_op_uno.valor} / "
+                  f"{mm_op_dos.objeto.rstrip()} {mm_op_dos.valor}")
+            if mm_eligio_correcta:
+                mm_puntos = mm_puntos + 1
+                print("  ✓ ¡Acertaste!")
+            else:
+                print("  ✗ Incorrecto.")
+            input("  Presione la tecla 'Enter' para continuar...")
+
+            mm_ronda = mm_ronda + 1
+            if mm_ronda <= 6:
+                mm_op_uno = mm_op_correcta
+                mm_op_dos = sortearOpcionNoUsada(mm_nro, mm_usados, mm_cant_usados,
+                                                 mm_op_correcta.valor)
+                mm_usados[mm_cant_usados] = mm_op_dos.NroOpcion
+                mm_cant_usados = mm_cant_usados + 1
+
+        mm_gano = mm_puntos >= 4
+        if mm_gano:
+            mm_reg.Creditos = mm_reg.Creditos + mm_apuesta
+            mm_reg.juegos[0][0] = mm_reg.juegos[0][0] + 1
+        else:
+            mm_reg.Creditos = mm_reg.Creditos - mm_apuesta
+            mm_reg.juegos[1][0] = mm_reg.juegos[1][0] + 1
+        actualizarJugador(mm_pos, mm_reg)
+
+        print("\n================================================")
+        print("           ♠  G A M E  O V E R  ♠")
+        print(f"  Jugador: {mm_nombre}")
+        print(f"  Puntos:  {mm_puntos} de 6")
+        if mm_gano:
+            print("  Resultado: GANASTE ✓")
+        else:
+            print("  Resultado: PERDISTE ✗")
+        print(f"  Créditos: ${int(mm_reg.Creditos)}")
+        print("================================================")
+        input("\nPresione la tecla 'Enter' para continuar...")
+
+# ---------------------------------------------------------------
+# JUEGO 2: NUMERO SECRETO
+# ---------------------------------------------------------------
+
+
+
+# ---------------------------------------------------------------
+# JUEGO 3: BLACKJACK
+# ---------------------------------------------------------------
+
+
+
+# ---------------------------------------------------------------
+# JUEGO 4: DADOS (PAR O IMPAR)
+# ---------------------------------------------------------------
+
+
 
 
 def enConstruccion():

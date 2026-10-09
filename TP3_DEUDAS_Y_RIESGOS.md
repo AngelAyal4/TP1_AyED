@@ -55,13 +55,15 @@ El acceso directo asume registros de tamaño fijo. `pickle` codifica los `int` c
 Consecuencia: los textos se guardan/muestran **sin acentos** (ej. `"Países"` → `"Paises"`, `"¿Quién...?"` → `"?Quien...?"`).
 **Pendiente:** consultar a la cátedra si esto es aceptable o si prefieren otra estrategia (ver consulta enviada al profesor).
 
-### Riesgo 3 — Juegos sin implementar (Reporte ya implementado)
+### Riesgo 3 — Juegos sin implementar (A y E implementados)
 El menú principal ya tiene las opciones A–G, pero:
-- `A` (Mayor/Menor): solo pide/crea el jugador; falta la partida completa.
+- `A` (Mayor/Menor): **implementado** — apuesta, 6 rondas (la correcta pasa de ronda), ≥4/6 gana, actualiza créditos y la matriz (col 0). Usa `random` y un arreglo fijo `[0]*8` para no repetir objetos.
 - `B`, `C`, `D`: muestran "en construcción" (stub).
 - `E` (Reporte): **implementado** (a: jugadores por créditos; b: juegos de un jugador).
 
 Se portan de los TP anteriores en fases siguientes. Los stubs evitan el `NameError` que crasheaba el programa.
+
+**Decisión Mayor/Menor:** el orden en que se muestran las 2 opciones de cada ronda se **randomiza** (`random.randint(0,1)`). Si no, la opción correcta que pasa de ronda quedaría siempre en la posición 1 y el juego sería trivial (bastaría responder siempre "1"). El enunciado pide opciones "aleatorias"; el ejemplo del enunciado es ambiguo con las etiquetas (1/2 luego 2/3).
 
 ### Riesgo 5 — CRUD de Jugadores: alcance
 Implementado: `buscarJugador` (R), `crearJugador` (C), `mostrarJugador` (R), `actualizarJugador` (U), `ordenarJugadoresPorCreditos` y `reportePartidasJugador`.
