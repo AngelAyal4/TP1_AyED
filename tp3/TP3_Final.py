@@ -206,6 +206,7 @@ def grabarJugadorEnPosicion(pos, reg):
 
 def actualizarJugador(pos, regJugador):
     # Regraba un jugador en su posicion; lo usan los juegos al terminar cada partida (U del CRUD).
+    # Patron de uso en los juegos: ver el bloque REFERENCIA al final de juegoMayorMenor.
     grabarJugadorEnPosicion(pos, regJugador)
     print("Jugador actualizado:", regJugador.nombre.rstrip())
 
@@ -871,6 +872,26 @@ def juegoMayorMenor():
                 mm_usados[mm_cant_usados] = mm_op_dos.NroOpcion
                 mm_cant_usados = mm_cant_usados + 1
 
+        # ------------------------------------------------------------------
+        # >>> REFERENCIA PARA LOS OTROS JUEGOS (B, C, D) <<<
+        # Asi se actualiza al jugador al terminar cada partida. Copiar este
+        # bloque al final de cada juego cambiando SOLO la columna:
+        #
+        #   1) Al iniciar el juego (esto ya esta hecho mas arriba):
+        #        - buscarJugador(nombre) / crearJugador(nombre) si no existe
+        #          (nunca se crea un registro duplicado)
+        #        - mm_reg = leerJugadorEnPosicion(mm_pos)  -> trae Creditos
+        #          y la matriz juegos
+        #   2) Creditos: si GANO suma la apuesta / si PERDIO la resta
+        #   3) Matriz juegos: sumar 1 en la casilla del juego
+        #        fila 0 = veces que gano   |   fila 1 = veces que perdio
+        #        col 0 = Mayor/Menor       |   col 1 = Numero secreto
+        #        col 2 = Blackjack         |   col 3 = Par/Impar
+        #      (este juego usa la col 0; los nombres estan en nombreJuego(col))
+        #   4) actualizarJugador(mm_pos, mm_reg) -> regraba el registro en
+        #      jugadores.dat EN LA MISMA POSICION (nunca agregar otro igual)
+        #   Nota Blackjack: el empate no suma en ninguna fila.
+        # ------------------------------------------------------------------
         mm_gano = mm_puntos >= 4
         if mm_gano:
             mm_reg.Creditos = mm_reg.Creditos + mm_apuesta
