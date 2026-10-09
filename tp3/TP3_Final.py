@@ -154,7 +154,7 @@ def buscarJugador(name):
         while arLoJugadores.tell() < tam and jug.nombre.rstrip().upper() != buscado:
             pos = arLoJugadores.tell()
             jug = pickle.load(arLoJugadores)
-        if jug.nombre.rstrip().upper() == buscado:
+        if jug.nombre.strip().upper() == buscado:
             resultado = pos
     return resultado
 
@@ -163,7 +163,7 @@ def crearJugador(name):
     # Agrega un jugador nuevo al final con credito inicial de 10000.
     global arLoJugadores
     jug = Jugador()
-    jug.nombre = formatear(name, LARGO_NOMBRE)
+    jug.nombre = formatear(name.strip(), LARGO_NOMBRE).upper()
     jug.Creditos = 10000.0
     arLoJugadores.seek(0, 2)
     pickle.dump(jug, arLoJugadores)
@@ -902,7 +902,341 @@ def juegoMayorMenor():
 # JUEGO 3: BLACKJACK
 # ---------------------------------------------------------------
 
+def juego_blackjack():
+    """
+    VARIABLES LOCALES
+        BJ_PALOS:list (arreglo con los cuatro palos de la baraja inglesa)
+        BJ_RANGOS:list (arreglo con los trece rangos de las cartas)
+        bj_nombre_jugador:str (nombre ingresado por el jugador)
+        bj_indice_jugador:int (posición del jugador en los arreglos de Blackjack)
+        bj_jugar_otra:str (respuesta S o N para iniciar otra partida)
+        bj_mazo:list (arreglo fijo que representa las 52 cartas del mazo)
+        bj_indice_mazo:int (posición utilizada para cargar las cartas en el mazo)
+        bj_indice_palo:int (posición utilizada para recorrer los palos)
+        bj_indice_rango:int (posición utilizada para recorrer los rangos)
+        bj_indice_carta:int (posición de la próxima carta que se extrae del mazo)
+        bj_cartas_jugador:list (arreglo fijo con las cartas de la mano del jugador)
+        bj_cartas_banca:list (arreglo fijo con las cartas de la mano de la banca)
+        bj_cantidad_cartas_jugador:int (cantidad de cartas ocupadas en la mano del jugador)
+        bj_cantidad_cartas_banca:int (cantidad de cartas ocupadas en la mano de la banca)
+        bj_puntos_jugador:int (puntuación total de la mano del jugador)
+        bj_puntos_banca:int (puntuación total de la mano de la banca)
+        bj_indice:int (posición utilizada para recorrer las manos de cartas)
+        bj_carta:list (carta actual mostrada durante el recorrido de una mano)
+        bj_carta_nueva:list (última carta entregada al jugador o a la banca)
+        bj_partida_inicial_finalizada:bool (indica si la partida terminó con el reparto inicial)
+        bj_turno_activo:bool (indica si el jugador continúa tomando decisiones)
+        bj_opcion:str (elección del jugador: pedir o plantarse)
+        bj_banca_blackjack:bool (indica si la banca tiene Blackjack natural)
+        bj_jugador_blackjack:bool (indica si el jugador tiene Blackjack natural)
+        bj_nombre_valido:int (indica si el nombre ingresado no esta vacio)
+        bj_salir:int (indica si se debe salir de la funcion sin jugar)
+        bj_i:int (posicion para el barajado Fisher-Yates)
+        bj_j:int (posicion aleatoria para intercambio en Fisher-Yates)
+        bj_aux:list (variable temporal para intercambiar dos cartas)
+    """
+    global bj_nombre_ultimo_jugador, bj_cantidad_jugadores
+    BJ_PALOS = ["♠", "♥", "♦", "♣"]
+    BJ_RANGOS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
 
+    print("\n================================================\n")
+    print("       ♠  BLACKJACK - EL 21  ♠")
+    print("  El objetivo es sumar 21 sin pasarte\n")
+    print("================================================\n")
+
+    # Validacion de nombre sin break
+    bj_nombre_valido = 0
+    while bj_nombre_valido == 0:
+        bj_nombre_jugador = input("Escribí tu nombre: ").strip()
+        if bj_nombre_jugador != "":
+            bj_nombre_valido = 1
+        else:
+            print("\n  ✗ Nombre vacío: Por favor escribí tu nombre\n")
+
+    bj_indice_jugador = buscar_jugador(
+        bj_jugadores,
+        bj_cantidad_jugadores,
+        bj_nombre_jugador
+    )
+
+    bj_salir = 0
+
+    if bj_indice_jugador == -1:
+        if bj_cantidad_jugadores == MAX_JUGADORES:
+            print("\n  ✗ No hay cupos para nuevos jugadores.")
+            print("  Se alcanzó el límite de 10 jugadores.")
+            input("\nPresione la tecla 'Enter' para continuar...")
+            bj_salir = 1
+
+        if bj_salir == 0:
+            bj_jugadores[bj_cantidad_jugadores] = bj_nombre_jugador
+            bj_jugadas[bj_cantidad_jugadores] = 0
+            bj_ganadas[bj_cantidad_jugadores] = 0
+            bj_perdidas[bj_cantidad_jugadores] = 0
+            bj_empatadas[bj_cantidad_jugadores] = 0
+
+            bj_indice_jugador = bj_cantidad_jugadores
+            bj_cantidad_jugadores = bj_cantidad_jugadores + 1
+
+            print(f"\n  ✓ Nuevo jugador registrado: {bj_nombre_jugador}")
+    else:
+        print(f"\n  ✓ Bienvenido nuevamente, {bj_jugadores[bj_indice_jugador]}")
+
+    if bj_salir == 0:
+        print(f"\n| Bienvenido, {bj_nombre_jugador} ♠          |")
+        bj_nombre_ultimo_jugador = bj_nombre_jugador
+
+        bj_jugar_otra = "S"
+        while bj_jugar_otra == "S":
+            bj_mazo = [
+                None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None,
+                None, None
+            ]
+
+            bj_indice_mazo = 0
+            bj_indice_palo = 0
+
+            while bj_indice_palo < 4:
+                bj_indice_rango = 0
+
+                while bj_indice_rango < 13:
+                    # Carta representada como lista [rango, palo] en vez de tupla
+                    bj_mazo[bj_indice_mazo] = [
+                        BJ_RANGOS[bj_indice_rango],
+                        BJ_PALOS[bj_indice_palo]
+                    ]
+
+                    bj_indice_mazo = bj_indice_mazo + 1
+                    bj_indice_rango = bj_indice_rango + 1
+
+                bj_indice_palo = bj_indice_palo + 1
+
+            # ALGORITMO: Barajado Fisher-Yates (reemplazo de random.shuffle)
+            # Recorre el mazo desde la ultima posicion hasta la primera.
+            # En cada paso elige una posicion aleatoria entre 0 y la actual
+            # e intercambia las dos cartas. Esto garantiza una permutacion
+            # uniforme sin necesidad de la funcion shuffle().
+            bj_i = 51
+            while bj_i > 0:
+                bj_j = random.randint(0, bj_i)
+                bj_aux = bj_mazo[bj_i]
+                bj_mazo[bj_i] = bj_mazo[bj_j]
+                bj_mazo[bj_j] = bj_aux
+                bj_i = bj_i - 1
+
+            bj_indice_carta = 0
+
+            bj_cartas_jugador = [
+                None, None, None, None, None,
+                None, None, None, None, None, None
+            ]
+
+            bj_cartas_banca = [
+                None, None, None, None, None,
+                None, None, None, None, None, None
+            ]
+
+            bj_cantidad_cartas_jugador = 0
+            bj_cantidad_cartas_banca = 0
+            bj_puntos_jugador = 0
+            bj_puntos_banca = 0
+
+            print("\n================================================")
+            print("          NUEVA PARTIDA")
+            print("================================================\n")
+
+            bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
+            bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+            bj_indice_carta = bj_indice_carta + 1
+
+            bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
+            bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+            bj_indice_carta = bj_indice_carta + 1
+
+            bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
+            bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+            bj_indice_carta = bj_indice_carta + 1
+
+            bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
+            bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+            bj_indice_carta = bj_indice_carta + 1
+
+            print("  Cartas de la Banca:")
+            bj_indice = 0
+
+            while bj_indice < bj_cantidad_cartas_banca:
+                bj_carta = bj_cartas_banca[bj_indice]
+                print(f"    [{bj_carta[0]}{bj_carta[1]}]")
+                bj_indice = bj_indice + 1
+
+            print("\n  Cartas de", bj_nombre_jugador + ":")
+            bj_indice = 0
+
+            while bj_indice < bj_cantidad_cartas_jugador:
+                bj_carta = bj_cartas_jugador[bj_indice]
+                print(f"    [{bj_carta[0]}{bj_carta[1]}]")
+                bj_indice = bj_indice + 1
+            bj_puntos_jugador = bj_calcular_puntos(bj_cartas_jugador, bj_cantidad_cartas_jugador)
+            print(f"\n  Tu puntuación: {bj_puntos_jugador}")
+
+            if bj_puntos_jugador == 21:
+                print("  ♠ ¡BLACKJACK! Sumaste 21 con las dos cartas.")
+                bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
+                print(f"\n  Puntuación Banca: {bj_puntos_banca}")
+                if bj_puntos_banca != 21:
+                    print("\n  >>> ¡GANASTE! <<<")
+                    bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
+                else:
+                    print("\n  >>> EMPATE (ambos con Blackjack) <<<")
+                    bj_empatadas[bj_indice_jugador] = bj_empatadas[bj_indice_jugador] + 1
+                bj_jugadas[bj_indice_jugador] = bj_jugadas[bj_indice_jugador] + 1
+                print("\n----------------------------------------")
+                print("  ESTADÍSTICAS DE BLACKJACK:")
+                print(f"    Jugador: {bj_jugadores[bj_indice_jugador]}")
+                print(f"    Partidas jugadas: {bj_jugadas[bj_indice_jugador]}")
+                print(f"    Ganadas: {bj_ganadas[bj_indice_jugador]}")
+                print(f"    Perdidas: {bj_perdidas[bj_indice_jugador]}")
+                print(f"    Empatadas: {bj_empatadas[bj_indice_jugador]}")
+                print("----------------------------------------")
+                bj_jugar_otra = ""
+                while bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                    bj_jugar_otra = input("\n¿Querés jugar otra partida? (S/N): ").strip().upper()
+                    if bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                        print("  ✗ Opción inválida. Ingresá S o N.")
+                if bj_jugar_otra == "S":
+                    print("\n  ✓ Comenzando nueva partida...")
+                else:
+                    print("\n  Volviendo al menú principal...")
+                bj_partida_inicial_finalizada = True
+            else:
+                bj_partida_inicial_finalizada = False
+
+            if bj_partida_inicial_finalizada == False:
+                bj_turno_activo = True
+                while bj_turno_activo:
+                    bj_opcion = ""
+                    while bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
+                        bj_opcion = input('\n  "Pedir" otra carta o "Plantarte": ').strip().upper()
+                        if bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
+                            print('  ✗ Opción inválida. Escribí "Pedir" o "Plantarse".')
+
+                    if bj_opcion == "PEDIR":
+                        bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_mazo[bj_indice_carta]
+
+                        bj_carta_nueva = bj_cartas_jugador[bj_cantidad_cartas_jugador]
+
+                        bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+                        bj_indice_carta = bj_indice_carta + 1
+
+                        print(f"\n  Sacaste: [{bj_carta_nueva[0]}{bj_carta_nueva[1]}]")
+                        print("  Tu mano:")
+                        bj_indice = 0
+
+                        while bj_indice < bj_cantidad_cartas_jugador:
+                            bj_carta = bj_cartas_jugador[bj_indice]
+                            print(f"    [{bj_carta[0]}{bj_carta[1]}]")
+                            bj_indice = bj_indice + 1
+                        bj_puntos_jugador = bj_calcular_puntos(bj_cartas_jugador, bj_cantidad_cartas_jugador)
+                        print(f"\n  Tu puntuación: {bj_puntos_jugador}")
+
+                        if bj_puntos_jugador > 21:
+                            print("\n  ✗ ¡Te pasaste de 21! Perdiste automáticamente.")
+                            bj_turno_activo = False
+                        elif bj_puntos_jugador == 21:
+                            print("\n  ♠ ¡Llegaste a 21! Pasás el turno a la banca.")
+                            bj_turno_activo = False
+                    else:
+                        print(f"\n  Te plantaste con {bj_puntos_jugador} puntos.")
+                        bj_turno_activo = False
+
+                if bj_puntos_jugador <= 21:
+                    print("\n----------------------------------------")
+                    print("  Turno de la Banca:")
+                    print("  Cartas de la Banca:")
+                    bj_indice = 0
+                    while bj_indice < bj_cantidad_cartas_banca:
+                        bj_carta = bj_cartas_banca[bj_indice]
+                        print(f"    [{bj_carta[0]}{bj_carta[1]}]")
+                        bj_indice = bj_indice + 1
+                    bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
+                    print(f"  Puntuación Banca: {bj_puntos_banca}")
+
+                    while bj_puntos_banca <= 16:
+                        bj_cartas_banca[bj_cantidad_cartas_banca] = bj_mazo[bj_indice_carta]
+
+                        bj_carta_nueva = bj_cartas_banca[bj_cantidad_cartas_banca]
+
+                        bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+                        bj_indice_carta = bj_indice_carta + 1
+
+                        print(f"\n  La banca pide carta: [{bj_carta_nueva[0]}{bj_carta_nueva[1]}]")
+                        bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
+                        print(f"  Puntuación Banca: {bj_puntos_banca}")
+
+                    print("\n----------------------------------------")
+                    if bj_puntos_banca > 21:
+                        print("\n  >>> ¡GANASTE! La banca se pasó de 21. <<<")
+                        bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
+                    elif bj_puntos_jugador > bj_puntos_banca:
+                        print(f"\n  >>> ¡GANASTE! Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
+                        bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
+                    elif bj_puntos_jugador < bj_puntos_banca:
+                        print(f"\n  >>> PERDISTE. Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
+                        bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
+                    else:
+                        #Empate a 21: si la banca tiene blackjack natural (2 cartas) y el jugador no, gana la banca
+                        bj_banca_blackjack = (
+                            bj_cantidad_cartas_banca == 2
+                            and bj_puntos_banca == 21
+                        )
+
+                        bj_jugador_blackjack = (
+                            bj_cantidad_cartas_jugador == 2
+                            and bj_puntos_jugador == 21
+                        )
+                        if bj_banca_blackjack and not bj_jugador_blackjack:
+                            print("\n  >>> PERDISTE. La banca tiene Blackjack natural. <<<")
+                            bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
+                        else:
+                            print(f"\n  >>> EMPATE. Ambos con {bj_puntos_jugador} puntos <<<")
+                            bj_empatadas[bj_indice_jugador] = bj_empatadas[bj_indice_jugador] + 1
+                else:
+                    bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
+                    bj_puntos_banca = bj_calcular_puntos(bj_cartas_banca, bj_cantidad_cartas_banca)
+                    print(f"\n  Puntuación Banca (no necesitó jugar): {bj_puntos_banca}")
+
+                bj_jugadas[bj_indice_jugador] = bj_jugadas[bj_indice_jugador] + 1
+                print("\n----------------------------------------")
+                print("  ESTADÍSTICAS DE BLACKJACK:")
+                print(f"    Jugador: {bj_jugadores[bj_indice_jugador]}")
+                print(f"    Partidas jugadas: {bj_jugadas[bj_indice_jugador]}")
+                print(f"    Ganadas: {bj_ganadas[bj_indice_jugador]}")
+                print(f"    Perdidas: {bj_perdidas[bj_indice_jugador]}")
+                print(f"    Empatadas: {bj_empatadas[bj_indice_jugador]}")
+                print("----------------------------------------")
+
+                bj_jugar_otra = ""
+                while bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                    bj_jugar_otra = input("\n¿Querés jugar otra partida? (S/N): ").strip().upper()
+                    if bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                        print("  ✗ Opción inválida. Ingresá S o N.")
+
+                if bj_jugar_otra == "S":
+                    print("\n  ✓ Comenzando nueva partida...")
+                else:
+                    print("\n================================================")
+                    print("|                                      |")
+                    print("|     ♠  G A M E  O V E R  ♠           |")
+                    print("|                                      |")
+                    print(f"|     Volviendo al menú principal...    |")
+                    print("|                                      |")
+                    print("================================================")
+
+        input("\nPresione la tecla 'Enter' para continuar...")
 
 # ---------------------------------------------------------------
 # JUEGO 4: DADOS (PAR O IMPAR)
