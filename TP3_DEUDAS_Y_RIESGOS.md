@@ -7,7 +7,7 @@ Fecha: 2026-10-08
 
 ## Deudas (decisiones tomadas, pendientes de resolver)
 
-### Deuda 1 — Validación del menú con lista
+### Deuda 1 — Validación del menú con lista (desestimar, no hacer)
 El menú principal valida la opción con una **lista literal**:
 
 ```python
@@ -23,7 +23,7 @@ while len(opcion) != 1 or opcion < "A" or opcion > "G":
 
 Forma parte de la pasada final de cumplimiento (PASO 11 del plan arquitectónico).
 
-### Deuda 2 — Archivos `.dat` en mayúsculas vacíos
+### Deuda 2 — Archivos `.dat` en mayúsculas vacíos (resuelto)
 En `tp3/` conviven archivos vacíos con mayúscula inicial:
 
 - `Categorias.dat`
@@ -45,7 +45,7 @@ El enunciado (§2, "Importante") exige que **`categorias.dat` y `opciones.dat` y
 
 ## Riesgos / limitaciones conocidas
 
-### Riesgo 1 — Tamaño de registro y enteros
+### Riesgo 1 — Tamaño de registro y enteros (no darle bola, no vamos a poner mas de 255 registros)
 El acceso directo asume registros de tamaño fijo. `pickle` codifica los `int` chicos (0–255) en 1 byte y los más grandes en más bytes.
 - `NroCategoria`: mientras sea < 256, el registro de categoría mide siempre igual (OK). Con 256+ categorías cambiaría de tamaño. **No aplica a este TP.**
 - `valor` de opciones: es un `int` arbitrario y cambia de tamaño al serializarse. **No rompe nada** porque Opciones **nunca usa acceso directo** (solo barridos secuenciales y append al final).
@@ -55,7 +55,7 @@ El acceso directo asume registros de tamaño fijo. `pickle` codifica los `int` c
 Consecuencia: los textos se guardan/muestran **sin acentos** (ej. `"Países"` → `"Paises"`, `"¿Quién...?"` → `"?Quien...?"`).
 **Pendiente:** consultar a la cátedra si esto es aceptable o si prefieren otra estrategia (ver consulta enviada al profesor).
 
-### Riesgo 3 — Juegos sin implementar (A y E implementados)
+### Riesgo 3 — Juegos sin implementar (A y E implementados) (implementar el random, no urgente)
 El menú principal ya tiene las opciones A–G, pero:
 - `A` (Mayor/Menor): **implementado** — apuesta, 6 rondas (la correcta pasa de ronda), ≥4/6 gana, actualiza créditos y la matriz (col 0). Usa `random` y un arreglo fijo `[0]*8` para no repetir objetos.
 - `B`, `C`, `D`: muestran "en construcción" (stub).
