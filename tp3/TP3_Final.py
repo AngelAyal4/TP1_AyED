@@ -1113,3 +1113,8 @@ if os.path.getsize(RUTA_OPCIONES) == 0:
     cargarOpcionesIniciales()
 menu()
 cerrarArchivos()
+
+
+
+# Faltan 3 juegos
+# Mayor menor if ff gano capaz podemos hacer una funcion para eso
