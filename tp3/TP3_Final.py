@@ -109,7 +109,7 @@ def sinAcentos(texto):
             or c == "Ô"
         ):
             resultado = resultado + "o"
-        elif (
+        elif (f
             c == "ú"
             or c == "ù"
             or c == "ü"
@@ -986,10 +986,95 @@ def juegoMayorMenor():
         print("================================================")
         input("\nPresione la tecla 'Enter' para continuar...")
 
-
 # ---------------------------------------------------------------
 # JUEGO 2: NUMERO SECRETO
 # ---------------------------------------------------------------
+def juegoNumeroSecreto():
+    # Numero secreto: 5 intentos para adivinar un numero entre 1 y 100 (opcion B).
+    """
+    VARIABLES LOCALES
+        ns_nombre:str (nombre ingresado por el jugador)
+        ns_pos:int (posicion del jugador en jugadores.dat)
+        ns_reg:Jugador (registro del jugador: creditos y matriz de juegos)
+        ns_intentos_max:int (cantidad maxima de intentos, 5)
+        ns_secreto:int (numero que "penso" la maquina, entre 1 y 100)
+        ns_intentos:int (intentos ya usados)
+        ns_acerto:bool (True si el jugador adivino)
+        ns_entrada:str (numero ingresado por teclado)
+        ns_valido:bool (control del ciclo de validacion del numero)
+        ns_numero:int (numero que probo el jugador)
+        ns_jugadas:int (partidas jugadas en total = ganadas + perdidas)
+    """
+    global arLoJugadores
+
+    print("\n================================================\n")
+    print("    ♠  ADIVINA EL NUMERO SECRETO  ♠")
+    print("\n================================================\n")
+
+    # 1) Jugador: se busca; si no existe se crea (nunca se duplica)
+    ns_nombre = input("Escribí tu nombre: ")
+    ns_nombre = validarNombre(ns_nombre)
+    ns_pos = buscarJugador(ns_nombre)
+    if ns_pos == -1:
+        crearJugador(ns_nombre)
+        ns_pos = buscarJugador(ns_nombre)
+    ns_reg = leerJugadorEnPosicion(ns_pos)
+
+    # 2) La maquina piensa un numero (no se muestra)
+    ns_intentos_max = 5
+    ns_secreto = random.randint(1, 100)
+    ns_intentos = 0
+    ns_acerto = False
+    print("\n  Pensé un número entre 1 y 100.")
+    print(f"  Tenés {ns_intentos_max} intentos para adivinarlo.")
+
+    # 3) Intentos: termina al acertar o al agotar los intentos
+    while ns_intentos < ns_intentos_max and not ns_acerto:
+        print("\n----------------------------------------")
+        print(f"  Intentos restantes: {ns_intentos_max - ns_intentos}")
+        print("----------------------------------------")
+
+        # Validacion: un numero invalido NO gasta intento
+        ns_valido = False
+        while not ns_valido:
+            ns_entrada = input("  Ingresá un número (1-100): ").strip()
+            if not esNumero(ns_entrada):
+                print("  ✗ Debés ingresar un número entero positivo.")
+            else:
+                ns_valido = validarIngresoEntero(ns_entrada, 1, 100)
+        ns_numero = int(ns_entrada)
+        ns_intentos = ns_intentos + 1
+
+        if ns_numero == ns_secreto:
+            ns_acerto = True
+        elif ns_secreto > ns_numero:
+            print("  ✗ No es. El número que pensé es MAYOR.")
+        else:
+            print("  ✗ No es. El número que pensé es MENOR.")
+
+    # 4) Actualizar al jugador (ver bloque REFERENCIA en juegoMayorMenor)
+    #    Este juego no tiene apuesta: los creditos no cambian.
+    #    Matriz juegos, col 1 = Numero secreto (fila 0 gano / fila 1 perdio)
+    if ns_acerto:
+        ns_reg.juegos[0][1] = ns_reg.juegos[0][1] + 1
+    else:
+        ns_reg.juegos[1][1] = ns_reg.juegos[1][1] + 1
+    actualizarJugador(ns_pos, ns_reg)
+    ns_jugadas = ns_reg.juegos[0][1] + ns_reg.juegos[1][1]
+
+    # 5) Resultado final
+    print("\n================================================")
+    print("           ♠  G A M E  O V E R  ♠")
+    print(f"  Jugador: {ns_nombre}")
+    if ns_acerto:
+        print(f"  ¡GANASTE! Adivinaste en {ns_intentos} intento(s).")
+    else:
+        print("  PERDISTE. Se acabaron los intentos.")
+        print(f"  El número que pensé era: {ns_secreto}")
+    print(f"  Partidas de Número secreto: {ns_jugadas}")
+    print(f"  Ganadas: {ns_reg.juegos[0][1]}  |  Perdidas: {ns_reg.juegos[1][1]}")
+    print("================================================")
+    input("\nPresione la tecla 'Enter' para continuar...")
 
 
 # ---------------------------------------------------------------
@@ -1377,7 +1462,7 @@ def ejecutar_case(o):
     if o == "A":
         juegoMayorMenor()
     if o == "B":
-        enConstruccion()
+        juegoNumeroSecreto()
     if o == "C":
         juego_blackjack()
     if o == "D":
