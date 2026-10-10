@@ -109,7 +109,7 @@ def sinAcentos(texto):
             or c == "Ô"
         ):
             resultado = resultado + "o"
-        elif (f
+        elif (
             c == "ú"
             or c == "ù"
             or c == "ü"
