@@ -3,7 +3,6 @@ import os
 import pickle
 import getpass
 
-
 # ---------------------------------------------------------------
 # RUTA DEL ARCHIVO
 # Si existe c:\tp3\ se usa esa carpeta (enunciado).
@@ -23,9 +22,9 @@ LARGO_NOMBRE = 30
 LARGO_PREGUNTA = 200
 LARGO_OBJETO = 100
 
-MIN_OPCIONES_PARTIDA = 7        # opciones distintas que necesita una partida (2 + 5 nuevas)
+MIN_OPCIONES_PARTIDA = 7  # opciones distintas que necesita una partida (2 + 5 nuevas)
 
-CONTRASENA_ADMIN = "admin"      # constante del programa principal (enunciado §F)
+CONTRASENA_ADMIN = "admin"  # constante del programa principal (enunciado §F)
 
 
 # ---------------------------------------------------------------
@@ -33,25 +32,27 @@ CONTRASENA_ADMIN = "admin"      # constante del programa principal (enunciado §
 # ---------------------------------------------------------------
 class Categoria:
     def __init__(self):
-        self.NroCategoria = 0                       # int (consecutivo desde 1)
-        self.NombreCategoria = " "                  # str(30)
-        self.Pregunta = " "                         # str(200)
-        self.Estado = "A"                           # A = Activa / I = Inactiva
+        self.NroCategoria = 0  # int (consecutivo desde 1)
+        self.NombreCategoria = " "  # str(30)
+        self.Pregunta = " "  # str(200)
+        self.Estado = "A"  # A = Activa / I = Inactiva
 
 
 class Opcion:
     def __init__(self):
-        self.NroCategoria = 0                       # FK -> Categoria.NroCategoria
-        self.NroOpcion = 0                          # consecutivo dentro de la categoria
-        self.objeto = " "                           # str(100)
-        self.valor = 0                              # int
+        self.NroCategoria = 0  # FK -> Categoria.NroCategoria
+        self.NroOpcion = 0  # consecutivo dentro de la categoria
+        self.objeto = " "  # str(100)
+        self.valor = 0  # int
 
 
 class Jugador:
     def __init__(self):
-        self.nombre = ""                            # str(30)
-        self.Creditos = 0.0                         # float (arranca en 10000)
-        self.juegos = [[0] * 4 for _ in range(2)]   # matriz 2x4 (fila 0 gano / fila 1 perdio)
+        self.nombre = ""  # str(30)
+        self.Creditos = 0.0  # float (arranca en 10000)
+        self.juegos = [
+            [0] * 4 for _ in range(2)
+        ]  # matriz 2x4 (fila 0 gano / fila 1 perdio)
 
 
 # ---------------------------------------------------------------
@@ -64,15 +65,60 @@ def sinAcentos(texto):
     i = 0
     while i < len(texto):
         c = texto[i]
-        if c == "á" or c == "à" or c == "ä" or c == "â" or c == "Á" or c == "À" or c == "Ä" or c == "Â":
+        if (
+            c == "á"
+            or c == "à"
+            or c == "ä"
+            or c == "â"
+            or c == "Á"
+            or c == "À"
+            or c == "Ä"
+            or c == "Â"
+        ):
             resultado = resultado + "a"
-        elif c == "é" or c == "è" or c == "ë" or c == "ê" or c == "É" or c == "È" or c == "Ë" or c == "Ê":
+        elif (
+            c == "é"
+            or c == "è"
+            or c == "ë"
+            or c == "ê"
+            or c == "É"
+            or c == "È"
+            or c == "Ë"
+            or c == "Ê"
+        ):
             resultado = resultado + "e"
-        elif c == "í" or c == "ì" or c == "ï" or c == "î" or c == "Í" or c == "Ì" or c == "Ï" or c == "Î":
+        elif (
+            c == "í"
+            or c == "ì"
+            or c == "ï"
+            or c == "î"
+            or c == "Í"
+            or c == "Ì"
+            or c == "Ï"
+            or c == "Î"
+        ):
             resultado = resultado + "i"
-        elif c == "ó" or c == "ò" or c == "ö" or c == "ô" or c == "Ó" or c == "Ò" or c == "Ö" or c == "Ô":
+        elif (
+            c == "ó"
+            or c == "ò"
+            or c == "ö"
+            or c == "ô"
+            or c == "Ó"
+            or c == "Ò"
+            or c == "Ö"
+            or c == "Ô"
+        ):
             resultado = resultado + "o"
-        elif c == "ú" or c == "ù" or c == "ü" or c == "û" or c == "Ú" or c == "Ù" or c == "Ü" or c == "Û":
+        elif (
+            c == "ú"
+            or c == "ù"
+            or c == "ü"
+            or c == "û"
+            or c == "Ú"
+            or c == "Ù"
+            or c == "Ü"
+            or c == "Û"
+        ):
             resultado = resultado + "u"
         elif c == "ñ":
             resultado = resultado + "n"
@@ -138,6 +184,7 @@ def validarNombre(name):
         name = input("Ingrese nombre (máximo 30 caracteres): ")
     return name
 
+
 # ---------------------------------------------------------------
 # CRUD JUGADORES
 # ---------------------------------------------------------------
@@ -151,10 +198,10 @@ def buscarJugador(name):
     arLoJugadores.seek(0, 0)
     if tam > 0:
         jug = pickle.load(arLoJugadores)
-        while arLoJugadores.tell() < tam and jug.nombre.rstrip().upper() != buscado:
+        while arLoJugadores.tell() < tam and jug.nombre.strip().upper() != buscado:
             pos = arLoJugadores.tell()
             jug = pickle.load(arLoJugadores)
-        if jug.nombre.rstrip().upper() == buscado:
+        if jug.nombre.strip().upper() == buscado:
             resultado = pos
     return resultado
 
@@ -163,7 +210,7 @@ def crearJugador(name):
     # Agrega un jugador nuevo al final con credito inicial de 10000.
     global arLoJugadores
     jug = Jugador()
-    jug.nombre = formatear(name, LARGO_NOMBRE)
+    jug.nombre = formatear(name.strip(), LARGO_NOMBRE).upper()
     jug.Creditos = 10000.0
     arLoJugadores.seek(0, 2)
     pickle.dump(jug, arLoJugadores)
@@ -236,8 +283,13 @@ def mostrarJugador(name):
         print("Creditos: ", reg.Creditos)
         col = 0
         while col < 4:
-            print(nombreJuego(col), "- Gano:", reg.juegos[0][col],
-                  "Perdio:", reg.juegos[1][col])
+            print(
+                nombreJuego(col),
+                "- Gano:",
+                reg.juegos[0][col],
+                "Perdio:",
+                reg.juegos[1][col],
+            )
             col = col + 1
     input("Presione Enter para continuar...")
 
@@ -368,8 +420,10 @@ def existeNombre(nombre, nroExcluido):
     arLoCategorias.seek(0, 0)
     while arLoCategorias.tell() < tam:
         reg = pickle.load(arLoCategorias)
-        if reg.NroCategoria != nroExcluido and \
-                reg.NombreCategoria.rstrip().upper() == nombre.strip().upper():
+        if (
+            reg.NroCategoria != nroExcluido
+            and reg.NombreCategoria.rstrip().upper() == nombre.strip().upper()
+        ):
             existe = True
     return existe
 
@@ -407,8 +461,15 @@ def listarCategorias(soloActivas):
     while arLoCategorias.tell() < tam:
         reg = pickle.load(arLoCategorias)
         if not soloActivas or reg.Estado == "A":
-            print(reg.NroCategoria, "|", reg.NombreCategoria.rstrip(), "|",
-                  reg.Estado, "|", reg.Pregunta.rstrip())
+            print(
+                reg.NroCategoria,
+                "|",
+                reg.NombreCategoria.rstrip(),
+                "|",
+                reg.Estado,
+                "|",
+                reg.Pregunta.rstrip(),
+            )
 
 
 def pedirCategoriaActiva(mensaje):
@@ -641,7 +702,9 @@ def pedirContrasena():
             if intentos < 3:
                 print("Contraseña incorrecta. Intentos restantes:", 3 - intentos)
     if not ok:
-        print("Superó los 3 intentos de ingresar contraseña, salga e intente nuevamente")
+        print(
+            "Superó los 3 intentos de ingresar contraseña, salga e intente nuevamente"
+        )
     return ok
 
 
@@ -732,6 +795,7 @@ def menuAdminOpciones():
 # JUEGO 1: MAYOR O MENOR
 # ---------------------------------------------------------------
 
+
 def yaUsado(usados, cantUsados, nroOpcion):
     # Devuelve True si 'nroOpcion' ya esta en el arreglo de opciones usadas.
     usado = False
@@ -753,7 +817,9 @@ def sortearOpcionNoUsada(nroCategoria, usados, cantUsados, valorEvitar):
     while repetida:
         k = random.randint(1, cant)
         opcion = leerOpcionKDe(nroCategoria, k)
-        repetida = yaUsado(usados, cantUsados, opcion.NroOpcion) or opcion.valor == valorEvitar
+        repetida = (
+            yaUsado(usados, cantUsados, opcion.NroOpcion) or opcion.valor == valorEvitar
+        )
     return opcion
 
 
@@ -818,7 +884,9 @@ def juegoMayorMenor():
         listarCategorias(True)
         mm_nro = pedirCategoriaActiva("Ingresar el número de categoría: ")
         while contarOpcionesDe(mm_nro) < MIN_OPCIONES_PARTIDA:
-            print(f"  ✗ Esa categoría no tiene opciones suficientes (mínimo {MIN_OPCIONES_PARTIDA}).")
+            print(
+                f"  ✗ Esa categoría no tiene opciones suficientes (mínimo {MIN_OPCIONES_PARTIDA})."
+            )
             mm_nro = pedirCategoriaActiva("Ingresar el número de categoría: ")
         mm_cat = leerCategoria(mm_nro)
         print("\n  Pregunta:", mm_cat.Pregunta.rstrip())
@@ -828,7 +896,9 @@ def juegoMayorMenor():
         mm_op_uno = sortearOpcionNoUsada(mm_nro, mm_usados, mm_cant_usados, None)
         mm_usados[mm_cant_usados] = mm_op_uno.NroOpcion
         mm_cant_usados = mm_cant_usados + 1
-        mm_op_dos = sortearOpcionNoUsada(mm_nro, mm_usados, mm_cant_usados, mm_op_uno.valor)
+        mm_op_dos = sortearOpcionNoUsada(
+            mm_nro, mm_usados, mm_cant_usados, mm_op_uno.valor
+        )
         mm_usados[mm_cant_usados] = mm_op_dos.NroOpcion
         mm_cant_usados = mm_cant_usados + 1
 
@@ -855,8 +925,10 @@ def juegoMayorMenor():
                 mm_op_correcta = mm_op_dos
                 mm_eligio_correcta = mm_opcion == "2"
 
-            print(f"\n  {mm_op_uno.objeto.rstrip()} {mm_op_uno.valor} / "
-                  f"{mm_op_dos.objeto.rstrip()} {mm_op_dos.valor}")
+            print(
+                f"\n  {mm_op_uno.objeto.rstrip()} {mm_op_uno.valor} / "
+                f"{mm_op_dos.objeto.rstrip()} {mm_op_dos.valor}"
+            )
             if mm_eligio_correcta:
                 mm_puntos = mm_puntos + 1
                 print("  ✓ ¡Acertaste!")
@@ -867,8 +939,9 @@ def juegoMayorMenor():
             mm_ronda = mm_ronda + 1
             if mm_ronda <= 6:
                 mm_op_uno = mm_op_correcta
-                mm_op_dos = sortearOpcionNoUsada(mm_nro, mm_usados, mm_cant_usados,
-                                                 mm_op_correcta.valor)
+                mm_op_dos = sortearOpcionNoUsada(
+                    mm_nro, mm_usados, mm_cant_usados, mm_op_correcta.valor
+                )
                 mm_usados[mm_cant_usados] = mm_op_dos.NroOpcion
                 mm_cant_usados = mm_cant_usados + 1
 
@@ -913,23 +986,285 @@ def juegoMayorMenor():
         print("================================================")
         input("\nPresione la tecla 'Enter' para continuar...")
 
+
 # ---------------------------------------------------------------
 # JUEGO 2: NUMERO SECRETO
 # ---------------------------------------------------------------
 
 
-
 # ---------------------------------------------------------------
 # JUEGO 3: BLACKJACK
 # ---------------------------------------------------------------
+def bj_sacar_carta(bj_cartas_usadas):
+    """
+    VARIABLES
+        bj_cartas_usadas: arreglo fijo de 52 booleanos.
+            Cada posición representa una carta: True indica que ya fue repartida.
+            La carta seleccionada se marca como usada antes de devolverla.
 
+        bj_id_carta: int (identificador aleatorio de una carta, entre 0 y 51).
+            Se van a generar nuevos candidatos hasta encontrar una carta sin repartir.
+    """
+    bj_id_carta = random.randint(0, 51)
+
+    while bj_cartas_usadas[bj_id_carta]:
+        bj_id_carta = random.randint(0, 51)
+
+    bj_cartas_usadas[bj_id_carta] = True
+
+    return bj_id_carta
+
+def bj_calcular_puntos(bj_cartas, bj_cantidad_cartas):
+    """
+    VARIABLES
+        bj_cartas: arreglo fijo de enteros (identificadores de las cartas de la mano).
+        bj_cantidad_cartas: int (cantidad de posiciones ocupadas en la mano).
+        bj_puntos: int (puntaje acumulado, ajustado mediante los ases si supera 21).
+        bj_ases: int (cantidad de ases que todavía valen 11 puntos).
+        bj_indice: int (posición utilizada para recorrer las cartas de la mano).
+        bj_rango: int (índice del rango de la carta actual, entre 0 y 12).
+    """
+    bj_puntos = 0
+    bj_ases = 0
+    bj_indice = 0
+
+    while bj_indice < bj_cantidad_cartas:
+        bj_rango = bj_cartas[bj_indice] % 13
+
+        if bj_rango == 12:
+            bj_puntos = bj_puntos + 11
+            bj_ases = bj_ases + 1
+        elif bj_rango >= 9:
+            bj_puntos = bj_puntos + 10
+        else:
+            bj_puntos = bj_puntos + bj_rango + 2
+
+        bj_indice = bj_indice + 1
+
+    while bj_puntos > 21 and bj_ases > 0:
+        bj_puntos = bj_puntos - 10
+        bj_ases = bj_ases - 1
+
+    return bj_puntos
+
+def juego_blackjack():
+    """
+    VARIABLES LOCALES
+        BJ_PALOS: arreglo fijo de 4 cadenas (símbolos de los palos).
+        BJ_RANGOS: arreglo fijo de 13 cadenas (etiquetas de los rangos, de 2 a A).
+
+        bj_nombre_jugador: str (nombre del jugador sin espacios de relleno).
+        bj_pos: int (posición en bytes del registro del jugador en jugadores.dat).
+        bj_reg: Jugador (registro del jugador, leído y guardado después de cada ronda).
+        bj_jugar_otra: str (S para jugar otra ronda; N para volver al menú).
+
+        bj_cartas_usadas: arreglo fijo de 52 booleanos (True indica una carta repartida).
+        bj_cartas_jugador: arreglo fijo de 11 enteros (identificadores de las cartas del jugador).
+        bj_cartas_banca: arreglo fijo de 11 enteros (identificadores de las cartas de la banca).
+        bj_cantidad_cartas_jugador: int (cantidad de posiciones ocupadas en la mano del jugador).
+        bj_cantidad_cartas_banca: int (cantidad de posiciones ocupadas en la mano de la banca).
+
+        bj_puntos_jugador: int (puntaje del jugador después de ajustar los ases).
+        bj_puntos_banca: int (puntaje de la banca después de ajustar los ases).
+        bj_indice: int (posición utilizada para recorrer las cartas de una mano).
+        bj_carta: int (identificador de la carta que se muestra, entre 0 y 51).
+        bj_carta_nueva: int (identificador de la última carta repartida, entre 0 y 51).
+
+        bj_turno_activo: bool (True mientras el jugador puede pedir cartas o plantarse).
+        bj_opcion: str (elección del jugador: PEDIR o PLANTARSE).
+    """
+
+    BJ_PALOS = ["♠", "♥", "♦", "♣"]
+    BJ_RANGOS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+
+    print("\n================================================\n")
+    print("       ♠  BLACKJACK - EL 21  ♠")
+    print("  El objetivo es sumar 21 sin pasarte\n")
+    print("================================================\n")
+
+    bj_nombre_jugador = input("Escribí tu nombre: ")
+    bj_nombre_jugador = validarNombre(bj_nombre_jugador)
+
+    bj_pos = buscarJugador(bj_nombre_jugador)
+
+    if bj_pos == -1:
+        crearJugador(bj_nombre_jugador)
+        bj_pos = buscarJugador(bj_nombre_jugador)
+
+    bj_reg = leerJugadorEnPosicion(bj_pos)
+    bj_nombre_jugador = bj_reg.nombre.strip()
+
+    print(f"\n| Bienvenido, {bj_nombre_jugador} ♠          |")
+
+    bj_jugar_otra = "S"
+    while bj_jugar_otra == "S":
+        bj_cartas_usadas = [False] * 52
+
+        bj_cartas_jugador = [0] * 11
+        bj_cartas_banca = [0] * 11
+
+        bj_cantidad_cartas_jugador = 0
+        bj_cantidad_cartas_banca = 0
+
+        bj_puntos_jugador = 0
+        bj_puntos_banca = 0
+
+        print("\n================================================")
+        print("          NUEVA PARTIDA")
+        print("================================================\n")
+
+        bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_sacar_carta(bj_cartas_usadas)
+        bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+
+        bj_cartas_banca[bj_cantidad_cartas_banca] = bj_sacar_carta(bj_cartas_usadas)
+        bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+
+        bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_sacar_carta(bj_cartas_usadas)
+        bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+
+        bj_cartas_banca[bj_cantidad_cartas_banca] = bj_sacar_carta(bj_cartas_usadas)
+        bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+
+        print("  Cartas de la Banca:")
+        bj_carta = bj_cartas_banca[0]
+        print(f"    [{BJ_RANGOS[bj_carta % 13]}{BJ_PALOS[bj_carta // 13]}]")
+        print("    [Carta oculta]")
+
+        print("\n  Cartas de", bj_nombre_jugador + ":")
+        bj_indice = 0
+
+        while bj_indice < bj_cantidad_cartas_jugador:
+            bj_carta = bj_cartas_jugador[bj_indice]
+            print(f"    [{BJ_RANGOS[bj_carta % 13]}{BJ_PALOS[bj_carta // 13]}]")
+            bj_indice = bj_indice + 1
+        bj_puntos_jugador = bj_calcular_puntos(
+            bj_cartas_jugador, bj_cantidad_cartas_jugador
+        )
+        print(f"\n  Tu puntuación: {bj_puntos_jugador}")
+
+        bj_turno_activo = bj_puntos_jugador < 21
+        while bj_turno_activo:
+            bj_opcion = ""
+            while bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
+                bj_opcion = (
+                    input('\n  "Pedir" otra carta o "Plantarse": ').strip().upper()
+                )
+                if bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
+                    print('  ✗ Opción inválida. Escribí "Pedir" o "Plantarse".')
+
+            if bj_opcion == "PEDIR":
+                bj_cartas_jugador[bj_cantidad_cartas_jugador] = bj_sacar_carta(
+                    bj_cartas_usadas
+                )
+
+                bj_carta_nueva = bj_cartas_jugador[bj_cantidad_cartas_jugador]
+
+                bj_cantidad_cartas_jugador = bj_cantidad_cartas_jugador + 1
+
+                print(f"\n  Sacaste: [{BJ_RANGOS[bj_carta_nueva % 13]}{BJ_PALOS[bj_carta_nueva // 13]}]")
+                print("  Tu mano:")
+                bj_indice = 0
+
+                while bj_indice < bj_cantidad_cartas_jugador:
+                    bj_carta = bj_cartas_jugador[bj_indice]
+                    print(f"    [{BJ_RANGOS[bj_carta % 13]}{BJ_PALOS[bj_carta // 13]}]")
+                    bj_indice = bj_indice + 1
+                bj_puntos_jugador = bj_calcular_puntos(
+                    bj_cartas_jugador, bj_cantidad_cartas_jugador
+                )
+                print(f"\n  Tu puntuación: {bj_puntos_jugador}")
+
+                if bj_puntos_jugador > 21:
+                    print("\n  ✗ ¡Te pasaste de 21! Perdiste automáticamente.")
+                    bj_turno_activo = False
+                elif bj_puntos_jugador == 21:
+                    print("\n  ♠ ¡Llegaste a 21! Pasás el turno a la banca.")
+                    bj_turno_activo = False
+            else:
+                print(f"\n  Te plantaste con {bj_puntos_jugador} puntos.")
+                bj_turno_activo = False
+
+        if bj_puntos_jugador <= 21:
+            print("\n----------------------------------------")
+            print("  Turno de la Banca:")
+            print("  Cartas de la Banca:")
+            bj_indice = 0
+            while bj_indice < bj_cantidad_cartas_banca:
+                bj_carta = bj_cartas_banca[bj_indice]
+                print(f"    [{BJ_RANGOS[bj_carta % 13]}{BJ_PALOS[bj_carta // 13]}]")
+                bj_indice = bj_indice + 1
+            bj_puntos_banca = bj_calcular_puntos(
+                bj_cartas_banca, bj_cantidad_cartas_banca
+            )
+            print(f"  Puntuación Banca: {bj_puntos_banca}")
+
+            while bj_puntos_banca <= 16:
+                bj_cartas_banca[bj_cantidad_cartas_banca] = bj_sacar_carta(
+                    bj_cartas_usadas
+                )
+
+                bj_carta_nueva = bj_cartas_banca[bj_cantidad_cartas_banca]
+
+                bj_cantidad_cartas_banca = bj_cantidad_cartas_banca + 1
+
+                print(
+                    f"\n  La banca pide carta: [{BJ_RANGOS[bj_carta_nueva % 13]}{BJ_PALOS[bj_carta_nueva // 13]}]"
+                )
+                bj_puntos_banca = bj_calcular_puntos(
+                    bj_cartas_banca, bj_cantidad_cartas_banca
+                )
+                print(f"  Puntuación Banca: {bj_puntos_banca}")
+
+            print("\n----------------------------------------")
+        if bj_puntos_jugador > 21:
+            print("\n  >>> PERDISTE. Superaste 21. <<<")
+            bj_reg.juegos[1][2] = bj_reg.juegos[1][2] + 1
+        elif bj_puntos_banca > 21:
+            print("\n  >>> ¡GANASTE! La banca se pasó de 21. <<<")
+            bj_reg.juegos[0][2] = bj_reg.juegos[0][2] + 1
+        elif bj_puntos_jugador > bj_puntos_banca:
+            print(f"\n  >>> ¡GANASTE! Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
+            bj_reg.juegos[0][2] = bj_reg.juegos[0][2] + 1
+        elif bj_puntos_jugador < bj_puntos_banca:
+            print(f"\n  >>> PERDISTE. Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
+            bj_reg.juegos[1][2] = bj_reg.juegos[1][2] + 1
+        else:
+            # The assignment records wins and losses; a draw changes neither counter.
+            print(f"\n  >>> EMPATE. Ambos con {bj_puntos_jugador} puntos <<<")
+
+        actualizarJugador(bj_pos, bj_reg)
+
+        print("\n----------------------------------------")
+        print("  ESTADÍSTICAS DE BLACKJACK:")
+        print(f"    Jugador: {bj_nombre_jugador}")
+        print(f"    Ganadas: {bj_reg.juegos[0][2]}")
+        print(f"    Perdidas: {bj_reg.juegos[1][2]}")
+        print("----------------------------------------")
+        bj_jugar_otra = ""
+        while bj_jugar_otra != "S" and bj_jugar_otra != "N":
+            bj_jugar_otra = (
+                input("\n¿Querés jugar otra partida? (S/N): ").strip().upper()
+            )
+            if bj_jugar_otra != "S" and bj_jugar_otra != "N":
+                print("  ✗ Opción inválida. Ingresá S o N.")
+
+        if bj_jugar_otra == "S":
+            print("\n  ✓ Comenzando nueva partida...")
+        else:
+            print("\n================================================")
+            print("|                                      |")
+            print("|     ♠  G A M E  O V E R  ♠           |")
+            print("|                                      |")
+            print(f"|     Volviendo al menú principal...    |")
+            print("|                                      |")
+            print("================================================")
+
+    input("\nPresione la tecla 'Enter' para continuar...")
 
 
 # ---------------------------------------------------------------
 # JUEGO 4: DADOS (PAR O IMPAR)
 # ---------------------------------------------------------------
-
-
 
 
 def enConstruccion():
@@ -1044,7 +1379,7 @@ def ejecutar_case(o):
     if o == "B":
         enConstruccion()
     if o == "C":
-        enConstruccion()
+        juego_blackjack()
     if o == "D":
         enConstruccion()
     if o == "E":
@@ -1113,7 +1448,6 @@ if os.path.getsize(RUTA_OPCIONES) == 0:
     cargarOpcionesIniciales()
 menu()
 cerrarArchivos()
-
 
 
 # Faltan 3 juegos
