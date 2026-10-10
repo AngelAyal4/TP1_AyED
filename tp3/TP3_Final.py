@@ -198,7 +198,7 @@ def buscarJugador(name):
     arLoJugadores.seek(0, 0)
     if tam > 0:
         jug = pickle.load(arLoJugadores)
-        while arLoJugadores.tell() < tam and jug.nombre.rstrip().upper() != buscado:
+        while arLoJugadores.tell() < tam and jug.nombre.strip().upper() != buscado:
             pos = arLoJugadores.tell()
             jug = pickle.load(arLoJugadores)
         if jug.nombre.strip().upper() == buscado:
@@ -975,6 +975,15 @@ def juegoMayorMenor():
 # JUEGO 3: BLACKJACK
 # ---------------------------------------------------------------
 def bj_sacar_carta(bj_cartas_usadas):
+    """
+    VARIABLES
+        bj_cartas_usadas: arreglo fijo de 52 booleanos.
+            Cada posición representa una carta: True indica que ya fue repartida.
+            La carta seleccionada se marca como usada antes de devolverla.
+
+        bj_id_carta: int (identificador aleatorio de una carta, entre 0 y 51).
+            Se van a generar nuevos candidatos hasta encontrar una carta sin repartir.
+    """
     bj_id_carta = random.randint(0, 51)
 
     while bj_cartas_usadas[bj_id_carta]:
@@ -985,6 +994,15 @@ def bj_sacar_carta(bj_cartas_usadas):
     return bj_id_carta
 
 def bj_calcular_puntos(bj_cartas, bj_cantidad_cartas):
+    """
+    VARIABLES
+        bj_cartas: arreglo fijo de enteros (identificadores de las cartas de la mano).
+        bj_cantidad_cartas: int (cantidad de posiciones ocupadas en la mano).
+        bj_puntos: int (puntaje acumulado, ajustado mediante los ases si supera 21).
+        bj_ases: int (cantidad de ases que todavía valen 11 puntos).
+        bj_indice: int (posición utilizada para recorrer las cartas de la mano).
+        bj_rango: int (índice del rango de la carta actual, entre 0 y 12).
+    """
     bj_puntos = 0
     bj_ases = 0
     bj_indice = 0
@@ -1011,35 +1029,28 @@ def bj_calcular_puntos(bj_cartas, bj_cantidad_cartas):
 def juego_blackjack():
     """
     VARIABLES LOCALES
-        BJ_PALOS:list (arreglo con los cuatro palos de la baraja inglesa)
-        BJ_RANGOS:list (arreglo con los trece rangos de las cartas)
-        bj_nombre_jugador:str (nombre ingresado por el jugador)
-        bj_indice_jugador:int (posición del jugador en los arreglos de Blackjack)
-        bj_jugar_otra:str (respuesta S o N para iniciar otra partida)
-        bj_mazo:list (arreglo fijo que representa las 52 cartas del mazo)
-        bj_indice_mazo:int (posición utilizada para cargar las cartas en el mazo)
-        bj_indice_palo:int (posición utilizada para recorrer los palos)
-        bj_indice_rango:int (posición utilizada para recorrer los rangos)
-        bj_indice_carta:int (posición de la próxima carta que se extrae del mazo)
-        bj_cartas_jugador:list (arreglo fijo con las cartas de la mano del jugador)
-        bj_cartas_banca:list (arreglo fijo con las cartas de la mano de la banca)
-        bj_cantidad_cartas_jugador:int (cantidad de cartas ocupadas en la mano del jugador)
-        bj_cantidad_cartas_banca:int (cantidad de cartas ocupadas en la mano de la banca)
-        bj_puntos_jugador:int (puntuación total de la mano del jugador)
-        bj_puntos_banca:int (puntuación total de la mano de la banca)
-        bj_indice:int (posición utilizada para recorrer las manos de cartas)
-        bj_carta:list (carta actual mostrada durante el recorrido de una mano)
-        bj_carta_nueva:list (última carta entregada al jugador o a la banca)
-        bj_partida_inicial_finalizada:bool (indica si la partida terminó con el reparto inicial)
-        bj_turno_activo:bool (indica si el jugador continúa tomando decisiones)
-        bj_opcion:str (elección del jugador: pedir o plantarse)
-        bj_banca_blackjack:bool (indica si la banca tiene Blackjack natural)
-        bj_jugador_blackjack:bool (indica si el jugador tiene Blackjack natural)
-        bj_nombre_valido:int (indica si el nombre ingresado no esta vacio)
-        bj_salir:int (indica si se debe salir de la funcion sin jugar)
-        bj_i:int (posicion para el barajado Fisher-Yates)
-        bj_j:int (posicion aleatoria para intercambio en Fisher-Yates)
-        bj_aux:list (variable temporal para intercambiar dos cartas)
+        BJ_PALOS: arreglo fijo de 4 cadenas (símbolos de los palos).
+        BJ_RANGOS: arreglo fijo de 13 cadenas (etiquetas de los rangos, de 2 a A).
+
+        bj_nombre_jugador: str (nombre del jugador sin espacios de relleno).
+        bj_pos: int (posición en bytes del registro del jugador en jugadores.dat).
+        bj_reg: Jugador (registro del jugador, leído y guardado después de cada ronda).
+        bj_jugar_otra: str (S para jugar otra ronda; N para volver al menú).
+
+        bj_cartas_usadas: arreglo fijo de 52 booleanos (True indica una carta repartida).
+        bj_cartas_jugador: arreglo fijo de 11 enteros (identificadores de las cartas del jugador).
+        bj_cartas_banca: arreglo fijo de 11 enteros (identificadores de las cartas de la banca).
+        bj_cantidad_cartas_jugador: int (cantidad de posiciones ocupadas en la mano del jugador).
+        bj_cantidad_cartas_banca: int (cantidad de posiciones ocupadas en la mano de la banca).
+
+        bj_puntos_jugador: int (puntaje del jugador después de ajustar los ases).
+        bj_puntos_banca: int (puntaje de la banca después de ajustar los ases).
+        bj_indice: int (posición utilizada para recorrer las cartas de una mano).
+        bj_carta: int (identificador de la carta que se muestra, entre 0 y 51).
+        bj_carta_nueva: int (identificador de la última carta repartida, entre 0 y 51).
+
+        bj_turno_activo: bool (True mientras el jugador puede pedir cartas o plantarse).
+        bj_opcion: str (elección del jugador: PEDIR o PLANTARSE).
     """
 
     BJ_PALOS = ["♠", "♥", "♦", "♣"]
@@ -1115,7 +1126,7 @@ def juego_blackjack():
             bj_opcion = ""
             while bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
                 bj_opcion = (
-                    input('\n  "Pedir" otra carta o "Plantarte": ').strip().upper()
+                    input('\n  "Pedir" otra carta o "Plantarse": ').strip().upper()
                 )
                 if bj_opcion != "PEDIR" and bj_opcion != "PLANTARSE":
                     print('  ✗ Opción inválida. Escribí "Pedir" o "Plantarse".')
@@ -1184,57 +1195,30 @@ def juego_blackjack():
                 print(f"  Puntuación Banca: {bj_puntos_banca}")
 
             print("\n----------------------------------------")
-            if bj_puntos_banca > 21:
-                print("\n  >>> ¡GANASTE! La banca se pasó de 21. <<<")
-                bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
-            elif bj_puntos_jugador > bj_puntos_banca:
-                print(
-                    f"\n  >>> ¡GANASTE! Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<"
-                )
-                bj_ganadas[bj_indice_jugador] = bj_ganadas[bj_indice_jugador] + 1
-            elif bj_puntos_jugador < bj_puntos_banca:
-                print(
-                    f"\n  >>> PERDISTE. Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<"
-                )
-                bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
-            else:
-                # Empate a 21: si la banca tiene blackjack natural (2 cartas) y el jugador no, gana la banca
-                bj_banca_blackjack = (
-                    bj_cantidad_cartas_banca == 2 and bj_puntos_banca == 21
-                )
-
-                bj_jugador_blackjack = (
-                    bj_cantidad_cartas_jugador == 2 and bj_puntos_jugador == 21
-                )
-                if bj_banca_blackjack and not bj_jugador_blackjack:
-                    print("\n  >>> PERDISTE. La banca tiene Blackjack natural. <<<")
-                    bj_perdidas[bj_indice_jugador] = (
-                        bj_perdidas[bj_indice_jugador] + 1
-                    )
-                else:
-                    print(
-                        f"\n  >>> EMPATE. Ambos con {bj_puntos_jugador} puntos <<<"
-                    )
-                    bj_empatadas[bj_indice_jugador] = (
-                        bj_empatadas[bj_indice_jugador] + 1
-                    )
+        if bj_puntos_jugador > 21:
+            print("\n  >>> PERDISTE. Superaste 21. <<<")
+            bj_reg.juegos[1][2] = bj_reg.juegos[1][2] + 1
+        elif bj_puntos_banca > 21:
+            print("\n  >>> ¡GANASTE! La banca se pasó de 21. <<<")
+            bj_reg.juegos[0][2] = bj_reg.juegos[0][2] + 1
+        elif bj_puntos_jugador > bj_puntos_banca:
+            print(f"\n  >>> ¡GANASTE! Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
+            bj_reg.juegos[0][2] = bj_reg.juegos[0][2] + 1
+        elif bj_puntos_jugador < bj_puntos_banca:
+            print(f"\n  >>> PERDISTE. Vos: {bj_puntos_jugador} | Banca: {bj_puntos_banca} <<<")
+            bj_reg.juegos[1][2] = bj_reg.juegos[1][2] + 1
         else:
-            bj_perdidas[bj_indice_jugador] = bj_perdidas[bj_indice_jugador] + 1
-            bj_puntos_banca = bj_calcular_puntos(
-                bj_cartas_banca, bj_cantidad_cartas_banca
-            )
-            print(f"\n  Puntuación Banca (no necesitó jugar): {bj_puntos_banca}")
+            # The assignment records wins and losses; a draw changes neither counter.
+            print(f"\n  >>> EMPATE. Ambos con {bj_puntos_jugador} puntos <<<")
 
-        bj_jugadas[bj_indice_jugador] = bj_jugadas[bj_indice_jugador] + 1
+        actualizarJugador(bj_pos, bj_reg)
+
         print("\n----------------------------------------")
         print("  ESTADÍSTICAS DE BLACKJACK:")
-        print(f"    Jugador: {bj_jugadores[bj_indice_jugador]}")
-        print(f"    Partidas jugadas: {bj_jugadas[bj_indice_jugador]}")
-        print(f"    Ganadas: {bj_ganadas[bj_indice_jugador]}")
-        print(f"    Perdidas: {bj_perdidas[bj_indice_jugador]}")
-        print(f"    Empatadas: {bj_empatadas[bj_indice_jugador]}")
+        print(f"    Jugador: {bj_nombre_jugador}")
+        print(f"    Ganadas: {bj_reg.juegos[0][2]}")
+        print(f"    Perdidas: {bj_reg.juegos[1][2]}")
         print("----------------------------------------")
-
         bj_jugar_otra = ""
         while bj_jugar_otra != "S" and bj_jugar_otra != "N":
             bj_jugar_otra = (
@@ -1374,7 +1358,7 @@ def ejecutar_case(o):
     if o == "B":
         enConstruccion()
     if o == "C":
-        enConstruccion()
+        juego_blackjack()
     if o == "D":
         enConstruccion()
     if o == "E":
