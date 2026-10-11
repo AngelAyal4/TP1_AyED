@@ -1,7 +1,7 @@
 # TP3 — Deudas técnicas y riesgos
 
 Notas pendientes de la integración de `categoriasOC.py` + `OpcionesCategorias0C.py` en `tp3/TP3_Final.py`.
-Fecha: 2026-10-08
+Fecha: 2026-10-08 (actualizado 2026-10-10: integración de Par o Impar desde `parimpar.py`).
 
 ---
 
@@ -55,13 +55,15 @@ El acceso directo asume registros de tamaño fijo. `pickle` codifica los `int` c
 Consecuencia: los textos se guardan/muestran **sin acentos** (ej. `"Países"` → `"Paises"`, `"¿Quién...?"` → `"?Quien...?"`).
 **Pendiente:** consultar a la cátedra si esto es aceptable o si prefieren otra estrategia (ver consulta enviada al profesor).
 
-### Riesgo 3 — Juegos sin implementar (A y E implementados) (implementar el random, no urgente)
-El menú principal ya tiene las opciones A–G, pero:
-- `A` (Mayor/Menor): **implementado** — apuesta, 6 rondas (la correcta pasa de ronda), ≥4/6 gana, actualiza créditos y la matriz (col 0). Usa `random` y un arreglo fijo `[0]*8` para no repetir objetos.
-- `B`, `C`, `D`: muestran "en construcción" (stub).
-- `E` (Reporte): **implementado** (a: jugadores por créditos; b: juegos de un jugador).
+### Riesgo 3 (resuelto) — Juegos implementados
+El menú principal tiene las opciones A–G y los 4 juegos + reporte están implementados:
+- `A` (Mayor/Menor): apuesta, 6 rondas (la correcta pasa de ronda), ≥4/6 gana, actualiza créditos y la matriz (col 0). Usa `random` y un arreglo fijo `[0]*8` para no repetir objetos.
+- `B` (Número secreto): 5 intentos, sin apuesta, actualiza la matriz (col 1).
+- `C` (Blackjack): un mazo de 52 cartas sin repetidas, la banca pide con ≤16, el empate no suma, actualiza la matriz (col 2).
+- `D` (Par o Impar): **integrado 2026-10-10 desde `parimpar.py`** (movido a `Cosas_Viejas/`). Apuesta validada 1..créditos con `esNumero`/`validarIngresoEntero`, dados sorteados y revelados recién después de la elección (enunciado §D: "sin mostrarlos"), bucle "¿otra partida?" como Blackjack, corta si el jugador se queda sin créditos. Actualiza `Creditos` y la matriz col 3 vía `actualizarJugador` (bloque REFERENCIA).
+- `E` (Reporte): a) jugadores por créditos; b) juegos de un jugador.
 
-Se portan de los TP anteriores en fases siguientes. Los stubs evitan el `NameError` que crasheaba el programa.
+La lógica del compañero se reescribió al estilo del archivo principal: reutiliza la capa de datos/validaciones existente (`buscarJugador`, `crearJugador`, `leerJugadorEnPosicion`, `actualizarJugador`, `validarNombre`) en vez de la suya propia (clase `Jugador` duplicada, apertura/cierre del archivo por operación y campo `creditos` en minúscula).
 
 **Decisión Mayor/Menor:** el orden en que se muestran las 2 opciones de cada ronda se **randomiza** (`random.randint(0,1)`). Si no, la opción correcta que pasa de ronda quedaría siempre en la posición 1 y el juego sería trivial (bastaría responder siempre "1"). El enunciado pide opciones "aleatorias"; el ejemplo del enunciado es ambiguo con las etiquetas (1/2 luego 2/3).
 
@@ -95,6 +97,7 @@ Cada función que toca un handle de archivo (`arLoCategorias`, `arLoOpciones`, `
 
 ## Estado actual
 
-- `tp3/TP3_Final.py`: integración de CRUD Categorías + Opciones + Jugadores (R/U), Administración (§F), Reporte (§E) y menú A–G.
+- `tp3/TP3_Final.py`: integración de CRUD Categorías + Opciones + Jugadores (R/U), Administración (§F), Reporte (§E), juegos A–D (§D integrado desde `parimpar.py`) y menú A–G. `enConstruccion` eliminada (ya no hay stubs).
+- `Cosas_Viejas/parimpar.py`: versión standalone del compañero (archivada tras la integración).
 - `tp3/categoriasOC.py` y `tp3/OpcionesCategorias0C.py`: módulos de prueba standalone (se mantienen).
 - `tp3/categorias.dat` y `tp3/opciones.dat`: **6 categorías activas** + **60 opciones (10 por categoría)**, cargadas vía el menú de Alta. Listas para el juego Menor-Mayor.

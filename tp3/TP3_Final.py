@@ -1350,12 +1350,126 @@ def juego_blackjack():
 # ---------------------------------------------------------------
 # JUEGO 4: DADOS (PAR O IMPAR)
 # ---------------------------------------------------------------
+def juegoParImpar():
+    # Juego de dados: se apuesta y se acierta si la suma de los dados es par/impar (opcion D).
+    """
+    VARIABLES LOCALES
+        pi_nombre:str (nombre ingresado por el jugador)
+        pi_pos:int (posicion del jugador en jugadores.dat)
+        pi_reg:Jugador (registro del jugador: creditos y matriz de juegos)
+        pi_jugar_otra:str ("S" juega otra ronda; "N" vuelve al menu)
+        pi_apuesta:int (creditos apostados en la ronda)
+        pi_apuesta_valida:bool (control del ciclo de apuesta)
+        pi_entrada:str (apuesta ingresada por teclado)
+        pi_eleccion:str ("P" = par; "I" = impar)
+        pi_dado1:int (primer dado, 1..6)
+        pi_dado2:int (segundo dado, 1..6)
+        pi_suma:int (suma de los dados)
+        pi_es_par:bool (True si la suma es par)
+        pi_tirada:str ("PAR" o "IMPAR" para mostrar la suma)
+        pi_gano:bool (True si acerto la apuesta)
+        pi_aciertos:int (aciertos de la sesion)
+        pi_jugadas:int (partidas jugadas en la sesion)
+    """
+    global arLoJugadores
 
+    print("\n================================================\n")
+    print("       ♠  JUEGO DE DADOS - PAR O IMPAR  ♠")
+    print("\n================================================\n")
 
-def enConstruccion():
-    # Stub para los juegos y el reporte que todavia no estan implementados.
-    print("Función en construcción, vuelva pronto")
-    input("Presione Enter para continuar...")
+    # 1) Jugador: se busca; si no existe se crea (nunca se duplica)
+    pi_nombre = input("Escribí tu nombre: ")
+    pi_nombre = validarNombre(pi_nombre)
+    pi_pos = buscarJugador(pi_nombre)
+    if pi_pos == -1:
+        crearJugador(pi_nombre)
+        pi_pos = buscarJugador(pi_nombre)
+    pi_reg = leerJugadorEnPosicion(pi_pos)
+
+    # 2) Rondas: se juega mientras el jugador tenga creditos y quiera seguir
+    pi_aciertos = 0
+    pi_jugadas = 0
+    pi_jugar_otra = "S"
+    while pi_jugar_otra == "S":
+        if pi_reg.Creditos < 1:
+            print(f"\n  ✗ {pi_nombre}, no tenés créditos para apostar.")
+            pi_jugar_otra = "N"
+        else:
+            print(f"\n  Créditos disponibles: ${int(pi_reg.Creditos)}")
+            pi_apuesta_valida = False
+            pi_apuesta = 0
+            while not pi_apuesta_valida:
+                pi_entrada = input("  Ingresá el monto de la apuesta: $").strip()
+                if not esNumero(pi_entrada):
+                    print("  ✗ La apuesta debe ser un número entero.")
+                elif validarIngresoEntero(pi_entrada, 1, int(pi_reg.Creditos)):
+                    pi_apuesta = int(pi_entrada)
+                    pi_apuesta_valida = True
+
+            pi_eleccion = (
+                input("  ¿La suma de los dados será PAR o IMPAR? (P/I): ")
+                .strip()
+                .upper()
+            )
+            while pi_eleccion != "P" and pi_eleccion != "I":
+                print("  ✗ Ingresá 'P' para par o 'I' para impar.")
+                pi_eleccion = (
+                    input("  ¿La suma de los dados será PAR o IMPAR? (P/I): ")
+                    .strip()
+                    .upper()
+                )
+
+            # Los dados se sortean y se muestran recien despues de la eleccion
+            pi_dado1 = random.randint(1, 6)
+            pi_dado2 = random.randint(1, 6)
+            pi_suma = pi_dado1 + pi_dado2
+            pi_es_par = pi_suma % 2 == 0
+            if pi_es_par:
+                pi_tirada = "PAR"
+            else:
+                pi_tirada = "IMPAR"
+            print(f"\n  Dados: {pi_dado1} y {pi_dado2}  ->  suma = {pi_suma} ({pi_tirada})")
+
+            # 3) Actualizar al jugador (ver bloque REFERENCIA en juegoMayorMenor):
+            #    creditos + matriz juegos, col 3 = Par/Impar (fila 0 gano / fila 1 perdio)
+            pi_gano = (pi_es_par and pi_eleccion == "P") or (
+                not pi_es_par and pi_eleccion == "I"
+            )
+            pi_jugadas = pi_jugadas + 1
+            if pi_gano:
+                pi_aciertos = pi_aciertos + 1
+                pi_reg.Creditos = pi_reg.Creditos + pi_apuesta
+                pi_reg.juegos[0][3] = pi_reg.juegos[0][3] + 1
+                print(f"  ✓ ¡GANASTE! Se te suman ${pi_apuesta}.")
+            else:
+                pi_reg.Creditos = pi_reg.Creditos - pi_apuesta
+                pi_reg.juegos[1][3] = pi_reg.juegos[1][3] + 1
+                print(f"  ✗ Perdiste. Se te restan ${pi_apuesta}.")
+            actualizarJugador(pi_pos, pi_reg)
+
+            print(f"  Crédito actual: ${int(pi_reg.Creditos)}")
+            if pi_reg.Creditos < 1:
+                print("  ✗ Se quedó sin créditos, ya no puede jugar.")
+                pi_jugar_otra = "N"
+            else:
+                pi_jugar_otra = (
+                    input("\n¿Querés jugar otra partida? (S/N): ").strip().upper()
+                )
+                while pi_jugar_otra != "S" and pi_jugar_otra != "N":
+                    print("  ✗ Opción inválida. Ingresá S o N.")
+                    pi_jugar_otra = (
+                        input("¿Querés jugar otra partida? (S/N): ").strip().upper()
+                    )
+
+    # 4) Resultado final
+    print("\n================================================")
+    print("           ♠  G A M E  O V E R  ♠")
+    print(f"  Jugador: {pi_nombre}")
+    print(f"  Aciertos de la sesión: {pi_aciertos} de {pi_jugadas} jugada(s)")
+    print(f"  Par/Impar acumulado - Gano: {pi_reg.juegos[0][3]}  |  Perdio: {pi_reg.juegos[1][3]}")
+    print(f"  Créditos: ${int(pi_reg.Creditos)}")
+    print("================================================")
+    input("\nPresione la tecla 'Enter' para continuar...")
 
 
 # ---------------------------------------------------------------
@@ -1466,7 +1580,7 @@ def ejecutar_case(o):
     if o == "C":
         juego_blackjack()
     if o == "D":
-        enConstruccion()
+        juegoParImpar()
     if o == "E":
         menuReporte()
     if o == "F":
@@ -1533,7 +1647,3 @@ if os.path.getsize(RUTA_OPCIONES) == 0:
     cargarOpcionesIniciales()
 menu()
 cerrarArchivos()
-
-
-# Faltan 3 juegos
-# Mayor menor if ff gano capaz podemos hacer una funcion para eso
